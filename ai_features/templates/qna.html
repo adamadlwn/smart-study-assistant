@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow p-4">
+
+    <h2>AI Q&A</h2>
+
+    <form>
+        <div class="mb-3">
+            <label>Pertanyaan</label>
+            <input type="text" class="form-control">
+        </div>
+
+        <button class="btn btn-success">
+            Ask AI
+        </button>
+    </form>
+
+    <hr>
+
+    <h4>Jawaban AI</h4>
+
+    <div class="result-box">
+        Jawaban AI akan muncul di sini...
+    </div>
+
+</div>
+{% endblock %}

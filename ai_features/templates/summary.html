@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow p-4">
+
+    <h2>AI Summary</h2>
+
+    <form>
+        <div class="mb-3">
+            <label>Masukkan Materi</label>
+            <textarea class="form-control" rows="8"></textarea>
+        </div>
+
+        <button class="btn btn-primary">
+            Generate Summary
+        </button>
+    </form>
+
+    <hr>
+
+    <h4>Hasil Ringkasan</h4>
+
+    <div class="result-box">
+        Ringkasan akan tampil di sini...
+    </div>
+
+</div>
+{% endblock %}

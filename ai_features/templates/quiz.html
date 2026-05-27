@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow p-4">
+
+    <h2>Quiz Generator</h2>
+
+    <form>
+        <div class="mb-3">
+            <label>Masukkan Materi</label>
+            <textarea class="form-control" rows="7"></textarea>
+        </div>
+
+        <button class="btn btn-warning">
+            Generate Quiz
+        </button>
+    </form>
+
+    <hr>
+
+    <h4>Hasil Quiz</h4>
+
+    <div class="result-box">
+        Soal quiz akan muncul di sini...
+    </div>
+
+</div>
+{% endblock %}
