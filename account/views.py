@@ -16,7 +16,9 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('dashboard')
+            # Kalau ada ?next=, redirect ke sana. Kalau tidak, ke dashboard
+            next_url = request.POST.get('next') or request.GET.get('next') or 'dashboard'
+            return redirect(next_url)
         else:
             messages.error(request, 'Username atau password salah.')
 

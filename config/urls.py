@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path
+from ai_features.views import summary_api
 
 from account.views import *
 from dashboard.views import *
@@ -22,4 +23,5 @@ urlpatterns = [
     path('summary/', summary_view, name='summary'),
     path('qna/', qna_view, name='qna'),
     path('quiz/', quiz_view, name='quiz'),
+    path('api/summary/', summary_api, name='summary_api'),
 ]
