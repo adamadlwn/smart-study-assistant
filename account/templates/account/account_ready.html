@@ -1,14 +1,111 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="text-center">
-    <div class="card p-5 shadow">
-        <h1>✅ Account Ready</h1>
-        <p>Akun berhasil dibuat dan siap digunakan.</p>
+<style>
+    .ready-wrapper {
+        display: flex;
+        min-height: 80vh;
+        align-items: center;
+        justify-content: center;
+    }
 
-        <a href="/login/" class="btn btn-primary">
-            Login Sekarang
-        </a>
+    .ready-card {
+        display: flex;
+        width: 100%;
+        max-width: 860px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .ready-left {
+        background-color: #b0b0b0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 30px;
+        text-align: center;
+    }
+
+    .ready-left img {
+        width: 180px;
+        margin-bottom: 16px;
+    }
+
+    .ready-left .brand-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+
+    .ready-right {
+        background-color: #fff;
+        flex: 1.2;
+        padding: 50px 45px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .ready-right .welcome-text {
+        color: #4a6cf7;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .ready-right .signup-label {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #1a1a2e;
+        margin-bottom: 28px;
+    }
+
+    .ready-right .account-ready-text {
+        font-weight: 900;
+        font-size: 2.8rem;
+        color: #1a1a2e;
+        line-height: 1.1;
+        margin-bottom: 40px;
+    }
+
+    .back-to-login {
+        font-size: 0.88rem;
+        color: #555;
+        text-decoration: none;
+    }
+
+    .back-to-login:hover {
+        color: #4a6cf7;
+        text-decoration: underline;
+    }
+</style>
+
+<div class="ready-wrapper">
+    <div class="ready-card">
+
+        <!-- Kiri -->
+        <div class="ready-left">
+            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration"
+                 onerror="this.style.display='none'">
+            <div class="brand-name">Smart Study Assistant</div>
+        </div>
+
+        <!-- Kanan -->
+        <div class="ready-right">
+            <p class="welcome-text">Hey Welcome back!</p>
+            <p class="signup-label">Sign Up</p>
+
+            <div class="account-ready-text">
+                YOUR<br>ACCOUNT<br>IS READY!
+            </div>
+
+            <a href="{% url 'login' %}" class="back-to-login">Back to Sign in/Login</a>
+        </div>
+
     </div>
 </div>
 {% endblock %}
