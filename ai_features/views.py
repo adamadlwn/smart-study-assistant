@@ -19,7 +19,7 @@ def summary_view(request):
 
 @login_required(login_url='/login/')
 def qna_view(request):
-    return render(request, 'ai_features/qna.html')
+    return render(request, 'qna.html')
 
 
 @login_required(login_url='/login/')
@@ -53,4 +53,29 @@ Materi:
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
+    return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
+
+@login_required(login_url='/login/')
+def qna_api(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            question = body.get('question', '').strip()
+ 
+            if not question:
+                return JsonResponse({'error': 'Pertanyaan tidak boleh kosong.'}, status=400)
+ 
+            prompt = f"""Jawab pertanyaan berikut dengan jelas dan mudah dipahami.
+Gunakan format plain text biasa tanpa markdown, tanpa bintang (**), tanpa simbol khusus.
+Jawab dalam Bahasa Indonesia.
+ 
+Pertanyaan:
+{question}"""
+ 
+            response = model.generate_content(prompt)
+            return JsonResponse({'result': response.text})
+ 
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+ 
     return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)

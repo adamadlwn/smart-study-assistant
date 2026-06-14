@@ -1,28 +1,272 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<div class="card shadow p-4">
+<style>
+    body {
+        background: #cfcfcf !important;
+    }
 
-    <h2>AI Q&A</h2>
+    .page-wrapper {
+        min-height: 100vh;
+        background: #cfcfcf;
+        padding: 30px 40px;
+    }
 
-    <form>
-        <div class="mb-3">
-            <label>Pertanyaan</label>
-            <input type="text" class="form-control">
+    .top-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 30px;
+    }
+
+    .back-btn {
+        color: #333;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .back-btn:hover {
+        color: #4a6cf7;
+    }
+
+    .user-info {
+        text-align: right;
+        font-size: 0.85rem;
+    }
+
+    .user-info .username {
+        font-weight: 700;
+        color: #1a1a2e;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .user-info .username::after {
+        content: '👤';
+        font-size: 1rem;
+    }
+
+    .user-info a {
+        color: #555;
+        text-decoration: none;
+        font-size: 0.8rem;
+    }
+
+    .user-info a:hover {
+        color: #4a6cf7;
+        text-decoration: underline;
+    }
+
+    .content-area {
+        max-width: 620px;
+        margin: 0 auto;
+    }
+
+    .page-title {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 20px;
+    }
+
+    .page-title img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+    }
+
+    .page-title h2 {
+        font-weight: 700;
+        font-size: 1.5rem;
+        color: #1a1a2e;
+        margin: 0;
+    }
+
+    .box-label {
+        font-weight: 700;
+        font-size: 0.88rem;
+        color: #1a1a2e;
+        margin-bottom: 8px;
+    }
+
+    .input-box {
+        background: #e8e8e8;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .input-box textarea {
+        width: 100%;
+        height: 130px;
+        border: none;
+        background: transparent;
+        resize: none;
+        outline: none;
+        font-size: 0.88rem;
+        color: #333;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .input-box textarea::placeholder {
+        color: #999;
+    }
+
+    .btn-ask {
+        background-color: #4a6cf7;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 7px 18px;
+        font-size: 0.82rem;
+        font-weight: 500;
+        float: right;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-ask:hover {
+        background-color: #3a57d7;
+    }
+
+    .btn-ask:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+    }
+
+    .result-box {
+        background: #e8e8e8;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .result-box textarea {
+        width: 100%;
+        height: 160px;
+        border: none;
+        background: transparent;
+        resize: none;
+        outline: none;
+        font-size: 0.85rem;
+        color: #444;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .loading-spinner {
+        display: none;
+        text-align: center;
+        color: #555;
+        font-size: 0.85rem;
+        margin: 8px 0;
+    }
+
+    .alert-error {
+        background-color: #ffe0e0;
+        color: #c0392b;
+        border-radius: 6px;
+        padding: 8px 12px;
+        font-size: 0.82rem;
+        margin-top: 8px;
+        display: none;
+    }
+</style>
+
+<div class="page-wrapper">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+        <div class="user-info">
+            <div class="username">{{ request.user.username }}</div>
+            <a href="{% url 'logout' %}">Logout</a>
         </div>
-
-        <button class="btn btn-success">
-            Ask AI
-        </button>
-    </form>
-
-    <hr>
-
-    <h4>Jawaban AI</h4>
-
-    <div class="result-box">
-        Jawaban AI akan muncul di sini...
     </div>
 
+    <!-- Content -->
+    <div class="content-area">
+
+        <!-- Title -->
+        <div class="page-title">
+            <img src="{% static 'images/qna.png' %}" alt="icon"
+                 onerror="this.style.display='none'">
+            <h2>AI Q&A</h2>
+        </div>
+
+        <!-- Question Input -->
+        <div class="box-label">Question:</div>
+        <div class="input-box">
+            <textarea id="questionInput" placeholder="Ask your question here..."></textarea>
+            <div class="alert-error" id="errorMsg"></div>
+            <button class="btn-ask" id="askBtn" onclick="askAI()">Ask AI</button>
+            <div style="clear:both;"></div>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading-spinner" id="loadingSpinner">⏳ Sedang memproses...</div>
+
+        <!-- Answer -->
+        <div class="box-label">AI answer:</div>
+        <div class="result-box">
+            <textarea id="answerResult" readonly
+                placeholder="AI Response will appear here..."></textarea>
+        </div>
+
+    </div>
 </div>
+
+<script>
+async function askAI() {
+    const question = document.getElementById('questionInput').value.trim();
+    const answerArea = document.getElementById('answerResult');
+    const askBtn = document.getElementById('askBtn');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+    const errorMsg = document.getElementById('errorMsg');
+
+    if (!question) {
+        alert('Masukkan pertanyaan terlebih dahulu!');
+        return;
+    }
+
+    askBtn.disabled = true;
+    loadingSpinner.style.display = 'block';
+    answerArea.value = '';
+    errorMsg.style.display = 'none';
+
+    try {
+        const response = await fetch("{% url 'qna_api' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ question: question })
+        });
+
+        const data = await response.json();
+
+        if (data.result) {
+            answerArea.value = data.result;
+        } else {
+            errorMsg.textContent = data.error || 'Terjadi kesalahan.';
+            errorMsg.style.display = 'block';
+        }
+    } catch (error) {
+        errorMsg.textContent = 'Gagal terhubung ke server.';
+        errorMsg.style.display = 'block';
+    } finally {
+        askBtn.disabled = false;
+        loadingSpinner.style.display = 'none';
+    }
+}
+</script>
+
 {% endblock %}
