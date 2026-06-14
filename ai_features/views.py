@@ -24,7 +24,7 @@ def qna_view(request):
 
 @login_required(login_url='/login/')
 def quiz_view(request):
-    return render(request, 'ai_features/quiz.html')
+    return render(request, 'quiz.html')
 
 
 @login_required(login_url='/login/')
@@ -71,6 +71,73 @@ Jawab dalam Bahasa Indonesia.
  
 Pertanyaan:
 {question}"""
+ 
+            response = model.generate_content(prompt)
+            return JsonResponse({'result': response.text})
+ 
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+ 
+    return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
+
+@login_required(login_url='/login/')
+def quiz_api(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            material = body.get('material', '').strip()
+ 
+            if not material:
+                return JsonResponse({'error': 'Materi tidak boleh kosong.'}, status=400)
+ 
+            prompt = f"""Buatkan 5 soal pilihan ganda berdasarkan materi berikut.
+Gunakan format plain text biasa tanpa markdown, tanpa bintang (**), tanpa simbol khusus.
+Format output:
+Question 1: [pertanyaan]
+A. [pilihan]
+B. [pilihan]
+C. [pilihan]
+D. [pilihan]
+ 
+Question 2: [pertanyaan]
+A. [pilihan]
+B. [pilihan]
+C. [pilihan]
+D. [pilihan]
+ 
+(dan seterusnya sampai 5 soal)
+ 
+Materi:
+{material}"""
+ 
+            response = model.generate_content(prompt)
+            return JsonResponse({'result': response.text})
+ 
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+ 
+    return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
+ 
+ 
+@login_required(login_url='/login/')
+def quiz_answer_api(request):
+    if request.method == 'POST':
+        try:
+            body = json.loads(request.body)
+            quiz = body.get('quiz', '').strip()
+ 
+            if not quiz:
+                return JsonResponse({'error': 'Soal tidak boleh kosong.'}, status=400)
+ 
+            prompt = f"""Berikan kunci jawaban untuk soal pilihan ganda berikut beserta penjelasan singkat.
+Gunakan format plain text biasa tanpa markdown, tanpa bintang (**), tanpa simbol khusus.
+Format output:
+Question 1: [jawaban yang benar] - [penjelasan singkat]
+Question 2: [jawaban yang benar] - [penjelasan singkat]
+(dan seterusnya)
+ 
+Soal:
+{quiz}"""
  
             response = model.generate_content(prompt)
             return JsonResponse({'result': response.text})
