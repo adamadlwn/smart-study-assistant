@@ -187,7 +187,6 @@
             <form method="POST" action="{% url 'login' %}">
                 {% csrf_token %}
                 <input type="hidden" name="next" value="{{ request.GET.next }}">
-            </form>
 
                 <!-- Username -->
                 <div class="d-flex align-items-center input-group-custom">
