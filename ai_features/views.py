@@ -107,6 +107,7 @@ def quiz_api(request):
         try:
             body = json.loads(request.body)
             material = body.get('material', '').strip()
+            session_id = body.get('session_id')  # NEW
 
             if not material:
                 return JsonResponse({'error': 'Materi tidak boleh kosong.'}, status=400)
@@ -133,8 +134,18 @@ Materi:
 
             response = model.generate_content(prompt)
 
-            # Simpan ke database
-            session = QuizSession.objects.create(user=request.user, materi_input=material)
+            # Reuse existing session if one was passed in, otherwise create a new one
+            session = None
+            if session_id:
+                session = QuizSession.objects.filter(id=session_id, user=request.user).first()
+
+            if session:
+                session.materi_input = material
+                session.save()
+                # old quiz/answer no longer matches the new material, clear it out
+                session.questions.all().delete()
+            else:
+                session = QuizSession.objects.create(user=request.user, materi_input=material)
 
             return JsonResponse({'result': response.text, 'session_id': session.id})
 
@@ -171,13 +182,15 @@ Soal:
             if session_id:
                 try:
                     session = QuizSession.objects.get(id=session_id, user=request.user)
-                    QuizQuestion.objects.create(
+                    QuizQuestion.objects.update_or_create(
                         session=session,
                         nomor_soal=1,
-                        pertanyaan=quiz,
-                        opsi_a='', opsi_b='', opsi_c='', opsi_d='',
-                        jawaban_benar='',
-                        penjelasan=response.text
+                        defaults={
+                            'pertanyaan': quiz,
+                            'opsi_a': '', 'opsi_b': '', 'opsi_c': '', 'opsi_d': '',
+                            'jawaban_benar': '',
+                            'penjelasan': response.text
+                        }
                     )
                 except QuizSession.DoesNotExist:
                     pass
@@ -214,5 +227,6 @@ def get_quiz_history(request, history_id):
     question = session.questions.first()
     return JsonResponse({
         'material': session.materi_input,
-        'result': question.penjelasan if question else ''
+        'quiz': question.pertanyaan if question else '',
+        'answer': question.penjelasan if question else ''
     })
