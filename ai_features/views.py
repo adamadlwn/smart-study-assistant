@@ -1,11 +1,10 @@
 import os
 import json
 import google.generativeai as genai
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from .models import AIHistory  # ← tambahkan ini
+from .models import Materi, HasilAI, QuizSession, QuizQuestion
 
 
 # Konfigurasi Gemini API
@@ -15,17 +14,26 @@ model = genai.GenerativeModel('gemini-2.5-flash')
 
 @login_required(login_url='/login/')
 def summary_view(request):
-    return render(request, 'summary.html')
+    histories = HasilAI.objects.filter(
+        materi__user=request.user,
+        hasil_summary__isnull=False
+    ).select_related('materi')
+    return render(request, 'summary.html', {'histories': histories})
 
 
 @login_required(login_url='/login/')
 def qna_view(request):
-    return render(request, 'qna.html')
+    histories = HasilAI.objects.filter(
+        materi__user=request.user,
+        pertanyaan__isnull=False
+    ).select_related('materi')
+    return render(request, 'qna.html', {'histories': histories})
 
 
 @login_required(login_url='/login/')
 def quiz_view(request):
-    return render(request, 'quiz.html')
+    histories = QuizSession.objects.filter(user=request.user)
+    return render(request, 'quiz.html', {'histories': histories})
 
 
 @login_required(login_url='/login/')
@@ -51,12 +59,8 @@ Materi:
             response = model.generate_content(prompt)
 
             # Simpan ke database
-            AIHistory.objects.create(
-                user=request.user,
-                feature_type='summary',
-                prompt=material,
-                response=response.text
-            )
+            materi = Materi.objects.create(user=request.user, isi_materi=material)
+            HasilAI.objects.create(materi=materi, hasil_summary=response.text)
 
             return JsonResponse({'result': response.text})
 
@@ -86,12 +90,8 @@ Pertanyaan:
             response = model.generate_content(prompt)
 
             # Simpan ke database
-            AIHistory.objects.create(
-                user=request.user,
-                feature_type='qna',
-                prompt=question,
-                response=response.text
-            )
+            materi = Materi.objects.create(user=request.user, isi_materi=question)
+            HasilAI.objects.create(materi=materi, pertanyaan=question, jawaban=response.text)
 
             return JsonResponse({'result': response.text})
 
@@ -134,14 +134,9 @@ Materi:
             response = model.generate_content(prompt)
 
             # Simpan ke database
-            AIHistory.objects.create(
-                user=request.user,
-                feature_type='quiz',
-                prompt=material,
-                response=response.text
-            )
+            session = QuizSession.objects.create(user=request.user, materi_input=material)
 
-            return JsonResponse({'result': response.text})
+            return JsonResponse({'result': response.text, 'session_id': session.id})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -155,6 +150,7 @@ def quiz_answer_api(request):
         try:
             body = json.loads(request.body)
             quiz = body.get('quiz', '').strip()
+            session_id = body.get('session_id')
 
             if not quiz:
                 return JsonResponse({'error': 'Soal tidak boleh kosong.'}, status=400)
@@ -171,11 +167,52 @@ Soal:
 
             response = model.generate_content(prompt)
 
-            # quiz_answer tidak disimpan karena hanya jawaban dari soal yang sudah ada
-            
+            # Simpan jawaban ke session
+            if session_id:
+                try:
+                    session = QuizSession.objects.get(id=session_id, user=request.user)
+                    QuizQuestion.objects.create(
+                        session=session,
+                        nomor_soal=1,
+                        pertanyaan=quiz,
+                        opsi_a='', opsi_b='', opsi_c='', opsi_d='',
+                        jawaban_benar='',
+                        penjelasan=response.text
+                    )
+                except QuizSession.DoesNotExist:
+                    pass
+
             return JsonResponse({'result': response.text})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
+
+
+@login_required(login_url='/login/')
+def get_summary_history(request, history_id):
+    hasil = get_object_or_404(HasilAI, id=history_id, materi__user=request.user)
+    return JsonResponse({
+        'material': hasil.materi.isi_materi,
+        'result': hasil.hasil_summary
+    })
+
+
+@login_required(login_url='/login/')
+def get_qna_history(request, history_id):
+    hasil = get_object_or_404(HasilAI, id=history_id, materi__user=request.user)
+    return JsonResponse({
+        'question': hasil.pertanyaan,
+        'result': hasil.jawaban
+    })
+
+
+@login_required(login_url='/login/')
+def get_quiz_history(request, history_id):
+    session = get_object_or_404(QuizSession, id=history_id, user=request.user)
+    question = session.questions.first()
+    return JsonResponse({
+        'material': session.materi_input,
+        'result': question.penjelasan if question else ''
+    })

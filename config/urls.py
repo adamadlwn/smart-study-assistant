@@ -27,4 +27,9 @@ urlpatterns = [
     path('api/qna/', qna_api, name='qna_api'),
     path('api/quiz/', quiz_api, name='quiz_api'),
     path('api/quiz-answer/', quiz_answer_api, name='quiz_answer_api'),
+
+    # History API
+    path('api/history/summary/<int:history_id>/', get_summary_history, name='get_summary_history'),
+    path('api/history/qna/<int:history_id>/', get_qna_history, name='get_qna_history'),
+    path('api/history/quiz/<int:history_id>/', get_quiz_history, name='get_quiz_history'),
 ]
