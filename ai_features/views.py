@@ -1,6 +1,7 @@
 import os
 import re
 import json
+from urllib import response
 import google.generativeai as genai
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
@@ -81,9 +82,9 @@ Pertanyaan:
 
             response = model.generate_content(prompt)
 
-            Qna.objects.create(user=request.user, pertanyaan=question, jawaban=response.text)
-
-            return JsonResponse({'result': response.text})
+            qna = Qna.objects.create(user=request.user, pertanyaan=question, jawaban=response.text)
+            
+            return JsonResponse({'result': response.text, 'history_id': qna.id})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)

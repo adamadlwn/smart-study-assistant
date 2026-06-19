@@ -338,24 +338,55 @@ async function askAI() {
 
         if (data.result) {
             answerArea.value = data.result;
-            location.reload(); // reload untuk update sidebar
+            addToSidebar(data.history_id, question);
         } else {
             errorMsg.textContent = data.error || 'Terjadi kesalahan.';
             errorMsg.style.display = 'block';
         }
     } catch (error) {
-        errorMsg.textContent = 'Gagal terhubung ke server.';
+        errorMsg.textContent = 'Error: ' + error.message;
         errorMsg.style.display = 'block';
+        console.error(error);
     } finally {
         askBtn.disabled = false;
         loadingSpinner.style.display = 'none';
     }
 }
 
-async function loadHistory(historyId, preview) {
-    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-    event.target.classList.add('active');
+function addToSidebar(historyId, question) {
+    const section = document.querySelector('.sidebar-section');
 
+    const noHistory = section.querySelector('.no-history');
+    if (noHistory) noHistory.remove();
+
+    if (!section.querySelector('.sidebar-section-title')) {
+        const title = document.createElement('div');
+        title.className = 'sidebar-section-title';
+        title.style.marginTop = '12px';
+        title.textContent = 'Recents';
+        section.prepend(title);
+    }
+
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+
+    const item = document.createElement('div');
+    item.className = 'history-item active';
+    item.textContent = question.length > 35 ? question.substring(0, 35) + '...' : question;
+    item.onclick = function () {
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        loadHistoryById(historyId);
+    };
+
+    const title = section.querySelector('.sidebar-section-title');
+    if (title && title.nextSibling) {
+        section.insertBefore(item, title.nextSibling);
+    } else {
+        section.appendChild(item);
+    }
+}
+
+async function loadHistoryById(historyId) {
     try {
         const response = await fetch(`/api/history/qna/${historyId}/`);
         const data = await response.json();
@@ -364,6 +395,12 @@ async function loadHistory(historyId, preview) {
     } catch (error) {
         alert('Gagal memuat history.');
     }
+}
+
+async function loadHistory(historyId, preview) {
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    loadHistoryById(historyId);
 }
 
 function newChat() {
