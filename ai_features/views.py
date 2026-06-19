@@ -1,38 +1,32 @@
 import os
+import re
 import json
 import google.generativeai as genai
 from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from .models import Materi, HasilAI, QuizSession, QuizQuestion
+from .models import Summary, Qna, QuizMateri, Quiz
 
 
-# Konfigurasi Gemini API
 genai.configure(api_key=os.environ.get('GEMINI_API_KEY'))
 model = genai.GenerativeModel('gemini-2.5-flash')
 
 
 @login_required(login_url='/login/')
 def summary_view(request):
-    histories = HasilAI.objects.filter(
-        materi__user=request.user,
-        hasil_summary__isnull=False
-    ).select_related('materi')
+    histories = Summary.objects.filter(user=request.user)
     return render(request, 'summary.html', {'histories': histories})
 
 
 @login_required(login_url='/login/')
 def qna_view(request):
-    histories = HasilAI.objects.filter(
-        materi__user=request.user,
-        pertanyaan__isnull=False
-    ).select_related('materi')
+    histories = Qna.objects.filter(user=request.user)
     return render(request, 'qna.html', {'histories': histories})
 
 
 @login_required(login_url='/login/')
 def quiz_view(request):
-    histories = QuizSession.objects.filter(user=request.user)
+    histories = QuizMateri.objects.filter(user=request.user, quizzes__isnull=False).distinct()
     return render(request, 'quiz.html', {'histories': histories})
 
 
@@ -58,11 +52,9 @@ Materi:
 
             response = model.generate_content(prompt)
 
-            # Simpan ke database
-            materi = Materi.objects.create(user=request.user, isi_materi=material)
-            HasilAI.objects.create(materi=materi, hasil_summary=response.text)
-
-            return JsonResponse({'result': response.text})
+            summary = Summary.objects.create(user=request.user, isi_materi=material, hasil_summary=response.text)
+            
+            return JsonResponse({'result': response.text, 'history_id': summary.id})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -89,9 +81,7 @@ Pertanyaan:
 
             response = model.generate_content(prompt)
 
-            # Simpan ke database
-            materi = Materi.objects.create(user=request.user, isi_materi=question)
-            HasilAI.objects.create(materi=materi, pertanyaan=question, jawaban=response.text)
+            Qna.objects.create(user=request.user, pertanyaan=question, jawaban=response.text)
 
             return JsonResponse({'result': response.text})
 
@@ -101,53 +91,87 @@ Pertanyaan:
     return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
 
 
+def parse_quiz_text(text):
+    """Pecah teks hasil AI jadi list dict per soal."""
+    pattern = re.compile(
+        r'Soal\s*\d+:\s*(.*?)\n'
+        r'A\)\s*(.*?)\n'
+        r'B\)\s*(.*?)\n'
+        r'C\)\s*(.*?)\n'
+        r'D\)\s*(.*?)\n'
+        r'Jawaban:\s*([A-D])',
+        re.DOTALL
+    )
+    questions = []
+    for m in pattern.findall(text):
+        questions.append({
+            'soal': m[0].strip(),
+            'opsi_a': m[1].strip(),
+            'opsi_b': m[2].strip(),
+            'opsi_c': m[3].strip(),
+            'opsi_d': m[4].strip(),
+            'jawaban_benar': m[5].strip(),
+        })
+    return questions
+
+
+def format_quiz_for_display(questions):
+    lines = []
+    for i, q in enumerate(questions, start=1):
+        lines.append(f"Question {i}: {q['soal']}")
+        lines.append(f"A. {q['opsi_a']}")
+        lines.append(f"B. {q['opsi_b']}")
+        lines.append(f"C. {q['opsi_c']}")
+        lines.append(f"D. {q['opsi_d']}")
+        lines.append("")
+    return "\n".join(lines).strip()
+
+
 @login_required(login_url='/login/')
 def quiz_api(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
             material = body.get('material', '').strip()
-            session_id = body.get('session_id')  # NEW
 
             if not material:
                 return JsonResponse({'error': 'Materi tidak boleh kosong.'}, status=400)
 
             prompt = f"""Buatkan 5 soal pilihan ganda berdasarkan materi berikut.
-Gunakan format plain text biasa tanpa markdown, tanpa bintang (**), tanpa simbol khusus.
-Format output:
-Question 1: [pertanyaan]
-A. [pilihan]
-B. [pilihan]
-C. [pilihan]
-D. [pilihan]
+Gunakan format PERSIS seperti contoh di bawah ini untuk setiap soal, tanpa markdown dan tanpa simbol bintang (**):
 
-Question 2: [pertanyaan]
-A. [pilihan]
-B. [pilihan]
-C. [pilihan]
-D. [pilihan]
+Soal 1: [pertanyaan]
+A) [pilihan]
+B) [pilihan]
+C) [pilihan]
+D) [pilihan]
+Jawaban: [A/B/C/D]
 
-(dan seterusnya sampai 5 soal)
+Soal 2: [pertanyaan]
+A) [pilihan]
+B) [pilihan]
+C) [pilihan]
+D) [pilihan]
+Jawaban: [A/B/C/D]
+
+(dan seterusnya sampai Soal 5)
 
 Materi:
 {material}"""
 
             response = model.generate_content(prompt)
+            questions = parse_quiz_text(response.text)
 
-            # Reuse existing session if one was passed in, otherwise create a new one
-            session = None
-            if session_id:
-                session = QuizSession.objects.filter(id=session_id, user=request.user).first()
+            if not questions:
+                return JsonResponse({'error': 'Gagal memproses hasil dari AI, coba generate ulang.'}, status=500)
 
-            if session:
-                session.materi_input = material
-                session.save()
-                # old quiz/answer no longer matches the new material, clear it out
-                session.questions.all().delete()
-            else:
-                session = QuizSession.objects.create(user=request.user, materi_input=material)
+            materi = QuizMateri.objects.create(user=request.user, isi_materi=material)
+            for q in questions:
+                Quiz.objects.create(materi=materi, **q)
 
-            return JsonResponse({'result': response.text, 'session_id': session.id})
+            quiz_text = format_quiz_for_display(questions)
+
+            return JsonResponse({'result': quiz_text, 'materi_id': materi.id})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -160,42 +184,19 @@ def quiz_answer_api(request):
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
-            quiz = body.get('quiz', '').strip()
-            session_id = body.get('session_id')
+            materi_id = body.get('materi_id')
 
-            if not quiz:
-                return JsonResponse({'error': 'Soal tidak boleh kosong.'}, status=400)
+            if not materi_id:
+                return JsonResponse({'error': 'materi_id tidak boleh kosong.'}, status=400)
 
-            prompt = f"""Berikan kunci jawaban untuk soal pilihan ganda berikut beserta penjelasan singkat.
-Gunakan format plain text biasa tanpa markdown, tanpa bintang (**), tanpa simbol khusus.
-Format output:
-Question 1: [jawaban yang benar] - [penjelasan singkat]
-Question 2: [jawaban yang benar] - [penjelasan singkat]
-(dan seterusnya)
+            materi = get_object_or_404(QuizMateri, id=materi_id, user=request.user)
+            quizzes = materi.quizzes.all()
 
-Soal:
-{quiz}"""
+            if not quizzes:
+                return JsonResponse({'error': 'Belum ada soal untuk materi ini.'}, status=404)
 
-            response = model.generate_content(prompt)
-
-            # Simpan jawaban ke session
-            if session_id:
-                try:
-                    session = QuizSession.objects.get(id=session_id, user=request.user)
-                    QuizQuestion.objects.update_or_create(
-                        session=session,
-                        nomor_soal=1,
-                        defaults={
-                            'pertanyaan': quiz,
-                            'opsi_a': '', 'opsi_b': '', 'opsi_c': '', 'opsi_d': '',
-                            'jawaban_benar': '',
-                            'penjelasan': response.text
-                        }
-                    )
-                except QuizSession.DoesNotExist:
-                    pass
-
-            return JsonResponse({'result': response.text})
+            lines = [f"Question {i}: {q.jawaban_benar}" for i, q in enumerate(quizzes, start=1)]
+            return JsonResponse({'result': "\n".join(lines)})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -205,16 +206,16 @@ Soal:
 
 @login_required(login_url='/login/')
 def get_summary_history(request, history_id):
-    hasil = get_object_or_404(HasilAI, id=history_id, materi__user=request.user)
+    hasil = get_object_or_404(Summary, id=history_id, user=request.user)
     return JsonResponse({
-        'material': hasil.materi.isi_materi,
+        'material': hasil.isi_materi,
         'result': hasil.hasil_summary
     })
 
 
 @login_required(login_url='/login/')
 def get_qna_history(request, history_id):
-    hasil = get_object_or_404(HasilAI, id=history_id, materi__user=request.user)
+    hasil = get_object_or_404(Qna, id=history_id, user=request.user)
     return JsonResponse({
         'question': hasil.pertanyaan,
         'result': hasil.jawaban
@@ -223,10 +224,18 @@ def get_qna_history(request, history_id):
 
 @login_required(login_url='/login/')
 def get_quiz_history(request, history_id):
-    session = get_object_or_404(QuizSession, id=history_id, user=request.user)
-    question = session.questions.first()
+    materi = get_object_or_404(QuizMateri, id=history_id, user=request.user)
+    quizzes = materi.quizzes.all()
+
+    quiz_lines = []
+    answer_lines = []
+    for i, q in enumerate(quizzes, start=1):
+        quiz_lines += [f"Question {i}: {q.soal}", f"A. {q.opsi_a}", f"B. {q.opsi_b}",
+                       f"C. {q.opsi_c}", f"D. {q.opsi_d}", ""]
+        answer_lines.append(f"Question {i}: {q.jawaban_benar}")
+
     return JsonResponse({
-        'material': session.materi_input,
-        'quiz': question.pertanyaan if question else '',
-        'answer': question.penjelasan if question else ''
+        'material': materi.isi_materi,
+        'quiz': "\n".join(quiz_lines).strip(),
+        'answer': "\n".join(answer_lines)
     })

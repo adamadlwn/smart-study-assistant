@@ -262,8 +262,8 @@
             {% if histories %}
                 <div class="sidebar-section-title" style="margin-top:12px;">Recents</div>
                 {% for h in histories %}
-                <div class="history-item" onclick="loadHistory({{ h.id }}, '{{ h.materi.isi_materi|truncatechars:40|escapejs }}')">
-                    {{ h.materi.isi_materi|truncatechars:35 }}
+                <div class="history-item" onclick="loadHistory({{ h.id }}, '{{ h.isi_materi|truncatechars:40|escapejs }}')">
+                    {{ h.isi_materi|truncatechars:35 }}
                 </div>
                 {% endfor %}
             {% else %}
@@ -341,25 +341,61 @@ async function generateSummary() {
 
         if (data.result) {
             resultArea.value = data.result;
-            location.reload(); // reload untuk update sidebar
+            addToSidebar(data.history_id, material);
         } else {
             errorMsg.textContent = data.error || 'Terjadi kesalahan.';
             errorMsg.style.display = 'block';
         }
     } catch (error) {
-        errorMsg.textContent = 'Gagal terhubung ke server.';
+        errorMsg.textContent = 'Error: ' + error.message;
         errorMsg.style.display = 'block';
+        console.error(error);
     } finally {
         generateBtn.disabled = false;
         loadingSpinner.style.display = 'none';
     }
 }
 
-async function loadHistory(historyId, preview) {
-    // Set active
-    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-    event.target.classList.add('active');
+function addToSidebar(historyId, material) {
+    const section = document.querySelector('.sidebar-section');
 
+    // Hapus pesan "belum ada history" jika ada
+    const noHistory = section.querySelector('.no-history');
+    if (noHistory) noHistory.remove();
+
+    // Buat title "Recents" jika belum ada
+    if (!section.querySelector('.sidebar-section-title')) {
+        const title = document.createElement('div');
+        title.className = 'sidebar-section-title';
+        title.style.marginTop = '12px';
+        title.textContent = 'Recents';
+        section.prepend(title);
+    }
+
+    // Hapus active dari semua item
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+
+    // Buat item baru
+    const item = document.createElement('div');
+    item.className = 'history-item active';
+    const label = material.length > 35 ? material.substring(0, 35) + '...' : material;
+    item.textContent = label;
+    item.onclick = function () {
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        loadHistoryById(historyId);
+    };
+
+    // Sisipkan paling atas
+    const title = section.querySelector('.sidebar-section-title');
+    if (title && title.nextSibling) {
+        section.insertBefore(item, title.nextSibling);
+    } else {
+        section.appendChild(item);
+    }
+}
+
+async function loadHistoryById(historyId) {
     try {
         const response = await fetch(`/api/history/summary/${historyId}/`);
         const data = await response.json();
@@ -368,6 +404,12 @@ async function loadHistory(historyId, preview) {
     } catch (error) {
         alert('Gagal memuat history.');
     }
+}
+
+async function loadHistory(historyId, preview) {
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    loadHistoryById(historyId);
 }
 
 function newChat() {

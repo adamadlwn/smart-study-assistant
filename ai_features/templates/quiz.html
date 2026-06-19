@@ -289,7 +289,7 @@
                 <div class="sidebar-section-title">Recents</div>
                 {% for h in histories %}
                 <div class="history-item" data-session-id="{{ h.id }}" onclick="loadHistory({{ h.id }})">
-                    {{ h.materi_input|truncatechars:35 }}
+                    {{ h.isi_materi|truncatechars:35 }}
                 </div>
                 {% endfor %}
             {% else %}
@@ -350,7 +350,7 @@
 
 <script>
 let generatedQuiz = '';
-let currentSessionId = null;
+let currentMateriId = null;
 
 async function generateQuiz() {
     const material = document.getElementById('materialInput').value.trim();
@@ -371,7 +371,6 @@ async function generateQuiz() {
     answerResult.value = '';
     generatedQuiz = '';
     errorMsg.style.display = 'none';
-    // currentSessionId is NOT reset here anymore — only newChat() resets it
 
     try {
         const response = await fetch("{% url 'quiz_api' %}", {
@@ -380,7 +379,7 @@ async function generateQuiz() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({ material: material, session_id: currentSessionId })
+            body: JSON.stringify({ material: material })
         });
 
         const data = await response.json();
@@ -388,15 +387,8 @@ async function generateQuiz() {
         if (data.result) {
             quizResult.value = data.result;
             generatedQuiz = data.result;
-
-            const isNewSession = currentSessionId !== data.session_id;
-            currentSessionId = data.session_id;
-
-            if (isNewSession) {
-                addToSidebar(currentSessionId, material);
-            } else {
-                updateSidebarLabel(currentSessionId, material);
-            }
+            currentMateriId = data.materi_id;
+            addToSidebar(currentMateriId, material);
         } else {
             errorMsg.textContent = data.error || 'Terjadi kesalahan.';
             errorMsg.style.display = 'block';
@@ -410,15 +402,7 @@ async function generateQuiz() {
     }
 }
 
-function updateSidebarLabel(sessionId, material) {
-    document.querySelectorAll('.history-item').forEach(el => {
-        if (el.dataset.sessionId === String(sessionId)) {
-            el.textContent = material.length > 35 ? material.substring(0, 35) + '...' : material;
-        }
-    });
-}
-
-function addToSidebar(sessionId, material) {
+function addToSidebar(materiId, material) {
     const section = document.querySelector('.sidebar-section');
     const noHistory = section.querySelector('.no-history');
     if (noHistory) noHistory.remove();
@@ -433,9 +417,9 @@ function addToSidebar(sessionId, material) {
 
     const item = document.createElement('div');
     item.className = 'history-item active';
-    item.dataset.sessionId = sessionId;            // NEW — needed for updateSidebarLabel
+    item.dataset.sessionId = materiId;
     item.textContent = material.length > 35 ? material.substring(0, 35) + '...' : material;
-    item.onclick = () => loadHistory(sessionId);
+    item.onclick = () => loadHistory(materiId);
 
     document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
     title.insertAdjacentElement('afterend', item);
@@ -447,7 +431,7 @@ async function submitAnswer() {
     const answerResult = document.getElementById('answerResult');
     const errorMsg = document.getElementById('errorMsg');
 
-    if (!generatedQuiz) {
+    if (!currentMateriId) {
         alert('Generate soal terlebih dahulu!');
         return;
     }
@@ -464,7 +448,7 @@ async function submitAnswer() {
                 'Content-Type': 'application/json',
                 'X-CSRFToken': '{{ csrf_token }}'
             },
-            body: JSON.stringify({ quiz: generatedQuiz, session_id: currentSessionId })
+            body: JSON.stringify({ materi_id: currentMateriId })
         });
 
         const data = await response.json();
@@ -484,14 +468,14 @@ async function submitAnswer() {
     }
 }
 
-async function loadHistory(sessionId) {
+async function loadHistory(materiId) {
     const materialInput = document.getElementById('materialInput');
     const quizResult = document.getElementById('quizResult');
     const answerResult = document.getElementById('answerResult');
     const errorMsg = document.getElementById('errorMsg');
 
     try {
-        const url = "{% url 'get_quiz_history' history_id=0 %}".replace('0', sessionId);
+        const url = "{% url 'get_quiz_history' history_id=0 %}".replace('0', materiId);
         const response = await fetch(url);
         const data = await response.json();
 
@@ -499,10 +483,10 @@ async function loadHistory(sessionId) {
         quizResult.value = data.quiz || '';
         answerResult.value = data.answer || '';
         generatedQuiz = data.quiz || '';
-        currentSessionId = sessionId;
+        currentMateriId = materiId;
 
         document.querySelectorAll('.history-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.sessionId === String(sessionId));
+            el.classList.toggle('active', el.dataset.sessionId === String(materiId));
         });
         errorMsg.style.display = 'none';
     } catch (error) {
@@ -517,7 +501,7 @@ function newChat() {
     document.getElementById('answerResult').value = '';
     document.getElementById('errorMsg').style.display = 'none';
     generatedQuiz = '';
-    currentSessionId = null;
+    currentMateriId = null;
     document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
 }
 </script>
