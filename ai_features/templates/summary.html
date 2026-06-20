@@ -7,11 +7,102 @@
         background: #cfcfcf !important;
     }
 
-    .page-wrapper {
-        min-height: 100vh;
+    .app-layout {
+    display: flex;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* SIDEBAR */
+.sidebar {
+    width: 260px;
+    min-width: 260px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: #1a1a2e;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 0;
+    overflow-y: auto;
+}
+
+    .sidebar-header {
+        padding: 0 16px 16px 16px;
+        border-bottom: 1px solid #2e2e4e;
+    }
+
+    .btn-new-chat {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: #4a6cf7;
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 14px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        transition: background 0.2s;
+    }
+
+    .btn-new-chat:hover {
+        background: #3a57d7;
+    }
+
+    .sidebar-section {
+        padding: 16px;
+    }
+
+    .sidebar-section-title {
+        font-size: 0.72rem;
+        font-weight: 700;
+        color: #888;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+    }
+
+    .history-item {
+        padding: 9px 12px;
+        border-radius: 7px;
+        font-size: 0.82rem;
+        color: #ccc;
+        cursor: pointer;
+        transition: background 0.15s;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 4px;
+    }
+
+    .history-item:hover {
+        background: #2e2e4e;
+        color: #fff;
+    }
+
+    .history-item.active {
+        background: #2e2e4e;
+        color: #fff;
+    }
+
+    .no-history {
+        font-size: 0.78rem;
+        color: #666;
+        font-style: italic;
+    }
+
+    .main-content {
+        margin-left: 260px;
+        flex: 1;
         background: #cfcfcf;
         padding: 30px 40px;
-        position: relative;
+        height: 100vh;
+        overflow-y: auto;
     }
 
     .top-bar {
@@ -31,14 +122,9 @@
         gap: 4px;
     }
 
-    .back-btn:hover {
-        color: #4a6cf7;
-    }
+    .back-btn:hover { color: #4a6cf7; }
 
-    .user-info {
-        text-align: right;
-        font-size: 0.85rem;
-    }
+    .user-info { text-align: right; font-size: 0.85rem; }
 
     .user-info .username {
         font-weight: 700;
@@ -49,10 +135,7 @@
         gap: 6px;
     }
 
-    .user-info .username::after {
-        content: '👤';
-        font-size: 1rem;
-    }
+    .user-info .username::after { content: '👤'; font-size: 1rem; }
 
     .user-info a {
         color: #555;
@@ -60,15 +143,9 @@
         font-size: 0.8rem;
     }
 
-    .user-info a:hover {
-        color: #4a6cf7;
-        text-decoration: underline;
-    }
+    .user-info a:hover { color: #4a6cf7; text-decoration: underline; }
 
-    .content-area {
-        max-width: 620px;
-        margin: 0 auto;
-    }
+    .content-area { max-width: 620px; margin: 0 auto; }
 
     .page-title {
         display: flex;
@@ -77,11 +154,7 @@
         margin-bottom: 20px;
     }
 
-    .page-title img {
-        width: 38px;
-        height: 38px;
-        object-fit: contain;
-    }
+    .page-title img { width: 38px; height: 38px; object-fit: contain; }
 
     .page-title h2 {
         font-weight: 700;
@@ -111,9 +184,7 @@
         font-family: 'Poppins', sans-serif;
     }
 
-    .input-box textarea::placeholder {
-        color: #999;
-    }
+    .input-box textarea::placeholder { color: #999; }
 
     .btn-generate {
         background-color: #4a6cf7;
@@ -128,14 +199,8 @@
         transition: background 0.2s;
     }
 
-    .btn-generate:hover {
-        background-color: #3a57d7;
-    }
-
-    .btn-generate:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
-    }
+    .btn-generate:hover { background-color: #3a57d7; }
+    .btn-generate:disabled { background-color: #aaa; cursor: not-allowed; }
 
     .result-box {
         background: #e8e8e8;
@@ -182,47 +247,65 @@
     }
 </style>
 
-<div class="page-wrapper">
+<div class="app-layout">
 
-    <!-- Top Bar -->
-    <div class="top-bar">
-        <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
-        <div class="user-info">
-            <div class="username">{{ request.user.username }}</div>
-            <a href="{% url 'logout' %}">Logout</a>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <button class="btn-new-chat" onclick="newChat()">
+                + New Chat
+            </button>
+        </div>
+
+        <div class="sidebar-section">
+
+            {% if histories %}
+                <div class="sidebar-section-title" style="margin-top:12px;">Recents</div>
+                {% for h in histories %}
+                <div class="history-item" onclick="loadHistory({{ h.id }}, '{{ h.isi_materi|truncatechars:40|escapejs }}')">
+                    {{ h.isi_materi|truncatechars:35 }}
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="no-history">Belum ada history.</div>
+            {% endif %}
         </div>
     </div>
 
-    <!-- Content -->
-    <div class="content-area">
-
-        <!-- Title -->
-        <div class="page-title">
-            <img src="{% static 'images/summary.png' %}" alt="icon"
-                 onerror="this.style.display='none'">
-            <h2>AI Summary</h2>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-bar">
+            <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+            <div class="user-info">
+                <div class="username">{{ request.user.username }}</div>
+                <a href="{% url 'logout' %}">Logout</a>
+            </div>
         </div>
 
-        <!-- Input -->
-        <div class="input-box">
-            <textarea id="materialInput" placeholder="Paste your study material here..."></textarea>
-            <div class="alert-error" id="errorMsg"></div>
-            <button class="btn-generate" id="generateBtn" onclick="generateSummary()">
-                Generate Summary
-            </button>
-            <div style="clear:both;"></div>
+        <div class="content-area">
+            <div class="page-title">
+                <img src="{% static 'images/summary.png' %}" alt="icon"
+                     onerror="this.style.display='none'">
+                <h2>AI Summary</h2>
+            </div>
+
+            <div class="input-box">
+                <textarea id="materialInput" placeholder="Paste your study material here..."></textarea>
+                <div class="alert-error" id="errorMsg"></div>
+                <button class="btn-generate" id="generateBtn" onclick="generateSummary()">
+                    Generate Summary
+                </button>
+                <div style="clear:both;"></div>
+            </div>
+
+            <div class="loading-spinner" id="loadingSpinner">⏳ Sedang memproses...</div>
+
+            <div class="result-box">
+                <h6>Summary Result:</h6>
+                <textarea id="summaryResult" readonly
+                    placeholder="• Point 1...&#10;• Point 2...&#10;• Point 3..."></textarea>
+            </div>
         </div>
-
-        <!-- Loading -->
-        <div class="loading-spinner" id="loadingSpinner">⏳ Sedang memproses...</div>
-
-        <!-- Result -->
-        <div class="result-box">
-            <h6>Summary Result:</h6>
-            <textarea id="summaryResult" readonly
-                placeholder="• Point 1...&#10;• Point 2...&#10;• Point 3...&#10;example..."></textarea>
-        </div>
-
     </div>
 </div>
 
@@ -258,17 +341,82 @@ async function generateSummary() {
 
         if (data.result) {
             resultArea.value = data.result;
+            addToSidebar(data.history_id, material);
         } else {
             errorMsg.textContent = data.error || 'Terjadi kesalahan.';
             errorMsg.style.display = 'block';
         }
     } catch (error) {
-        errorMsg.textContent = 'Gagal terhubung ke server.';
+        errorMsg.textContent = 'Error: ' + error.message;
         errorMsg.style.display = 'block';
+        console.error(error);
     } finally {
         generateBtn.disabled = false;
         loadingSpinner.style.display = 'none';
     }
+}
+
+function addToSidebar(historyId, material) {
+    const section = document.querySelector('.sidebar-section');
+
+    // Hapus pesan "belum ada history" jika ada
+    const noHistory = section.querySelector('.no-history');
+    if (noHistory) noHistory.remove();
+
+    // Buat title "Recents" jika belum ada
+    if (!section.querySelector('.sidebar-section-title')) {
+        const title = document.createElement('div');
+        title.className = 'sidebar-section-title';
+        title.style.marginTop = '12px';
+        title.textContent = 'Recents';
+        section.prepend(title);
+    }
+
+    // Hapus active dari semua item
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+
+    // Buat item baru
+    const item = document.createElement('div');
+    item.className = 'history-item active';
+    const label = material.length > 35 ? material.substring(0, 35) + '...' : material;
+    item.textContent = label;
+    item.onclick = function () {
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        loadHistoryById(historyId);
+    };
+
+    // Sisipkan paling atas
+    const title = section.querySelector('.sidebar-section-title');
+    if (title && title.nextSibling) {
+        section.insertBefore(item, title.nextSibling);
+    } else {
+        section.appendChild(item);
+    }
+}
+
+async function loadHistoryById(historyId) {
+    try {
+        const response = await fetch(`/api/history/summary/${historyId}/`);
+        const data = await response.json();
+        document.getElementById('materialInput').value = data.material;
+        document.getElementById('summaryResult').value = data.result;
+    } catch (error) {
+        alert('Gagal memuat history.');
+    }
+}
+
+async function loadHistory(historyId, preview) {
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    event.target.classList.add('active');
+    loadHistoryById(historyId);
+}
+
+function newChat() {
+    document.getElementById('materialInput').value = '';
+    document.getElementById('summaryResult').value = '';
+    document.getElementById('errorMsg').style.display = 'none';
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
 }
 </script>
 

@@ -1,0 +1,194 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<style>
+    body {
+        background-color: #f0f0f0;
+    }
+
+    .register-wrapper {
+        display: flex;
+        min-height: 80vh;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .register-card {
+        display: flex;
+        width: 100%;
+        max-width: 860px;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+
+    .register-left {
+        background-color: #b0b0b0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 30px;
+        color: #fff;
+        text-align: center;
+    }
+
+    .register-left img {
+        width: 180px;
+        margin-bottom: 16px;
+    }
+
+    .register-left .brand-name {
+        font-weight: 700;
+        font-size: 1.1rem;
+        color: #fff;
+    }
+
+    .register-right {
+        background-color: #fff;
+        flex: 1.2;
+        padding: 50px 45px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .register-right .welcome-text {
+        color: #4a6cf7;
+        font-size: 0.95rem;
+        font-weight: 500;
+        margin-bottom: 4px;
+    }
+
+    .register-right h2 {
+        font-weight: 700;
+        font-size: 2rem;
+        margin-bottom: 16px;
+        color: #1a1a2e;
+    }
+
+    .register-right .info-text {
+        font-size: 0.85rem;
+        color: #666;
+        margin-bottom: 24px;
+        line-height: 1.5;
+    }
+
+    .input-group-custom {
+        border: none;
+        border-bottom: 1.5px solid #ccc;
+        border-radius: 0;
+        margin-bottom: 20px;
+    }
+
+    .input-group-custom .form-control {
+        border: none;
+        border-radius: 0;
+        padding-left: 8px;
+        font-size: 0.9rem;
+        background: transparent;
+        box-shadow: none;
+        width: 100%;
+        padding-bottom: 6px;
+    }
+
+    .input-group-custom .form-control:focus {
+        box-shadow: none;
+        border-bottom: 1.5px solid #4a6cf7;
+        outline: none;
+    }
+
+    .input-group-custom .input-icon {
+        color: #aaa;
+        font-size: 0.9rem;
+        padding-right: 8px;
+    }
+
+    .btn-register {
+        background-color: #4a6cf7;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 8px 28px;
+        font-size: 0.9rem;
+        font-weight: 500;
+        margin-top: 8px;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .btn-register:hover {
+        background-color: #3a57d7;
+        color: #fff;
+    }
+
+    .back-to-login {
+        font-size: 0.88rem;
+        color: #555;
+        text-decoration: none;
+        display: inline-block;
+        margin-top: 14px;
+    }
+
+    .back-to-login:hover {
+        color: #4a6cf7;
+        text-decoration: underline;
+    }
+
+    .errorlist {
+        list-style: none;
+        padding: 0;
+        margin: -14px 0 14px 0;
+        color: #c0392b;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="register-wrapper">
+    <div class="register-card">
+
+        <!-- Kiri -->
+        <div class="register-left">
+            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration"
+                 onerror="this.style.display='none'">
+            <div class="brand-name">Smart Study Assistant</div>
+        </div>
+
+        <!-- Kanan -->
+        <div class="register-right">
+            <p class="welcome-text">Hey Welcome back!</p>
+            <h2>Sign Up</h2>
+            <p class="info-text">Kamu akan menggunakan akun Google untuk masuk ke Smart Study Assistant. Lengkapi data berikut untuk melanjutkan:</p>
+
+            <form method="post" action="{% url 'socialaccount_signup' %}">
+                {% csrf_token %}
+
+                {% for field in form %}
+                    <div class="d-flex align-items-center input-group-custom">
+                        <span class="input-icon">
+                            {% if 'email' in field.name %}&#128231;{% else %}&#128100;{% endif %}
+                        </span>
+                        {{ field }}
+                    </div>
+                    {% if field.errors %}
+                        <ul class="errorlist">
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+
+                {{ redirect_field }}
+
+                <button type="submit" class="btn-register">Sign Up</button>
+            </form>
+
+            <a href="{% url 'login' %}" class="back-to-login">Back to Sign in/Login</a>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
