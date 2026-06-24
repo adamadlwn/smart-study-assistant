@@ -20,7 +20,7 @@
         max-width: 860px;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     }
 
     .register-left {
@@ -128,11 +128,58 @@
         text-decoration: underline;
     }
 
-    .alert-danger, .alert-success {
+    .alert-danger,
+    .alert-success {
         font-size: 0.85rem;
         padding: 8px 12px;
         border-radius: 6px;
         margin-bottom: 14px;
+    }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    @media (max-width: 768px) {
+        .register-wrapper {
+            padding: 20px 16px;
+            min-height: 100vh;
+            align-items: flex-start;
+        }
+
+        .register-card {
+            flex-direction: column;
+            border-radius: 12px;
+        }
+
+        .register-left {
+            padding: 24px 20px;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            min-height: auto;
+        }
+
+        .register-left img {
+            width: 50px;
+            margin-bottom: 0;
+        }
+
+        .register-left .brand-name {
+            font-size: 0.9rem;
+        }
+
+        .register-right {
+            padding: 28px 24px;
+        }
+
+        .register-right h2 {
+            font-size: 1.6rem;
+            margin-bottom: 20px;
+        }
+
+        .btn-register {
+            width: 100%;
+            text-align: center;
+        }
     }
 </style>
 
@@ -142,8 +189,7 @@
         <!-- Kiri -->
         <div class="register-left">
             <!-- Ganti src dengan path gambar dari Figma kamu -->
-            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration"
-                 onerror="this.style.display='none'">
+            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration" onerror="this.style.display='none'">
             <div class="brand-name">Smart Study Assistant</div>
         </div>
 
@@ -153,11 +199,11 @@
             <h2>Sign Up</h2>
 
             {% if messages %}
-                {% for message in messages %}
-                    <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
+            {% for message in messages %}
+            <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
             {% endif %}
 
             <form method="POST" action="{% url 'register' %}">
@@ -166,22 +212,20 @@
                 <!-- Username -->
                 <div class="d-flex align-items-center input-group-custom">
                     <span class="input-icon">&#128100;</span>
-                    <input type="text" name="username" class="form-control"
-                           placeholder="Your Name" required>
+                    <input type="text" name="username" class="form-control" placeholder="Your Name" required>
                 </div>
 
                 <!-- Password -->
                 <div class="d-flex align-items-center input-group-custom">
                     <span class="input-icon">&#128274;</span>
-                    <input type="password" name="password1" class="form-control"
-                           placeholder="Your Password" required>
+                    <input type="password" name="password1" class="form-control" placeholder="Your Password" required>
                 </div>
 
                 <!-- Konfirmasi Password -->
                 <div class="d-flex align-items-center input-group-custom">
                     <span class="input-icon">&#128274;</span>
-                    <input type="password" name="password2" class="form-control"
-                           placeholder="Confirm Password" required>
+                    <input type="password" name="password2" class="form-control" placeholder="Confirm Password"
+                        required>
                 </div>
 
                 <button type="submit" class="btn btn-register">Register</button>

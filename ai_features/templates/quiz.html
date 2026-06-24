@@ -50,9 +50,13 @@
         transition: background 0.2s;
     }
 
-    .btn-new-chat:hover { background: #3a57d7; }
+    .btn-new-chat:hover {
+        background: #3a57d7;
+    }
 
-    .sidebar-section { padding: 16px; }
+    .sidebar-section {
+        padding: 16px;
+    }
 
     .sidebar-section-title {
         font-size: 0.72rem;
@@ -76,8 +80,15 @@
         margin-bottom: 4px;
     }
 
-    .history-item:hover { background: #2e2e4e; color: #fff; }
-    .history-item.active { background: #2e2e4e; color: #fff; }
+    .history-item:hover {
+        background: #2e2e4e;
+        color: #fff;
+    }
+
+    .history-item.active {
+        background: #2e2e4e;
+        color: #fff;
+    }
 
     .no-history {
         font-size: 0.78rem;
@@ -93,7 +104,7 @@
         height: 100vh;
         overflow-y: scroll;
         scrollbar-width: none;
-    box-sizing: border-box;
+        box-sizing: border-box;
     }
 
     .main-content::-webkit-scrollbar {
@@ -117,9 +128,14 @@
         gap: 4px;
     }
 
-    .back-btn:hover { color: #4a6cf7; }
+    .back-btn:hover {
+        color: #4a6cf7;
+    }
 
-    .user-info { text-align: right; font-size: 0.85rem; }
+    .user-info {
+        text-align: right;
+        font-size: 0.85rem;
+    }
 
     .user-info .username {
         font-weight: 700;
@@ -130,12 +146,26 @@
         gap: 6px;
     }
 
-    .user-info .username::after { content: '👤'; font-size: 1rem; }
+    .user-info .username::after {
+        content: '👤';
+        font-size: 1rem;
+    }
 
-    .user-info a { color: #555; text-decoration: none; font-size: 0.8rem; }
-    .user-info a:hover { color: #4a6cf7; text-decoration: underline; }
+    .user-info a {
+        color: #555;
+        text-decoration: none;
+        font-size: 0.8rem;
+    }
 
-    .content-area { max-width: 620px; margin: 0 auto; }
+    .user-info a:hover {
+        color: #4a6cf7;
+        text-decoration: underline;
+    }
+
+    .content-area {
+        max-width: 620px;
+        margin: 0 auto;
+    }
 
     .page-title {
         display: flex;
@@ -144,7 +174,11 @@
         margin-bottom: 20px;
     }
 
-    .page-title img { width: 38px; height: 38px; object-fit: contain; }
+    .page-title img {
+        width: 38px;
+        height: 38px;
+        object-fit: contain;
+    }
 
     .page-title h2 {
         font-weight: 700;
@@ -167,7 +201,7 @@
         border-radius: 10px;
         padding: 16px;
         margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .input-box textarea {
@@ -182,7 +216,9 @@
         font-family: 'Poppins', sans-serif;
     }
 
-    .input-box textarea::placeholder { color: #999; }
+    .input-box textarea::placeholder {
+        color: #999;
+    }
 
     .btn-generate {
         background-color: #4a6cf7;
@@ -197,8 +233,14 @@
         margin-bottom: 16px;
     }
 
-    .btn-generate:hover { background-color: #3a57d7; }
-    .btn-generate:disabled { background-color: #aaa; cursor: not-allowed; }
+    .btn-generate:hover {
+        background-color: #3a57d7;
+    }
+
+    .btn-generate:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+    }
 
     .btn-submit {
         background-color: #4a6cf7;
@@ -213,15 +255,21 @@
         margin-bottom: 12px;
     }
 
-    .btn-submit:hover { background-color: #3a57d7; }
-    .btn-submit:disabled { background-color: #aaa; cursor: not-allowed; }
+    .btn-submit:hover {
+        background-color: #3a57d7;
+    }
+
+    .btn-submit:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+    }
 
     .result-box {
         background: #e8e8e8;
         border-radius: 10px;
         padding: 16px;
         margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .result-box textarea {
@@ -240,7 +288,7 @@
         background: #e8e8e8;
         border-radius: 10px;
         padding: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     }
 
     .answer-box textarea {
@@ -272,6 +320,144 @@
         margin-bottom: 8px;
         display: none;
     }
+
+    /* ===== RESPONSIVE MOBILE ===== */
+    @media (max-width: 768px) {
+        body {
+            overflow: auto !important;
+        }
+
+        .app-layout {
+            flex-direction: column;
+            height: auto;
+            overflow: visible;
+        }
+
+        /* SIDEBAR jadi header di atas */
+        .sidebar {
+            width: 100%;
+            min-width: unset;
+            height: auto;
+            position: relative;
+            top: unset;
+            left: unset;
+            flex-direction: column;
+            padding: 14px 0 0 0;
+            overflow-y: visible;
+            overflow-x: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 16px 12px 16px;
+            border-bottom: 1px solid #2e2e4e;
+        }
+
+        .btn-new-chat {
+            padding: 12px 16px;
+            font-size: 0.92rem;
+            border-radius: 10px;
+        }
+
+        /* History scroll horizontal */
+        .sidebar-section {
+            display: block;
+            padding: 10px 16px 14px 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .sidebar-section::-webkit-scrollbar {
+            display: none;
+        }
+
+        .sidebar-section-title {
+            font-size: 0.72rem;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .history-item {
+            display: inline-block;
+            width: auto;
+            max-width: 160px;
+            margin-right: 8px;
+            margin-bottom: 0;
+            vertical-align: top;
+            white-space: nowrap;
+        }
+
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 0;
+            height: auto;
+            padding: 20px 16px;
+            overflow-y: visible;
+        }
+
+        .top-bar {
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .content-area {
+            max-width: 100%;
+        }
+
+        .page-title h2 {
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+        }
+
+        .input-box {
+            padding: 14px;
+        }
+
+        .input-box textarea {
+            height: 100px;
+            font-size: 0.9rem;
+        }
+
+        /* Tombol Generate & See Answer full width */
+        .btn-generate {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 10px;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+
+        /* Result soal */
+        .result-box {
+            padding: 14px;
+            margin-bottom: 12px;
+        }
+
+        .result-box textarea {
+            height: 180px;
+            font-size: 0.88rem;
+        }
+
+        /* Answer box */
+        .answer-box {
+            padding: 14px;
+        }
+
+        .answer-box textarea {
+            height: 120px;
+            font-size: 0.88rem;
+        }
+    }
 </style>
 
 <div class="app-layout">
@@ -286,14 +472,14 @@
 
         <div class="sidebar-section">
             {% if histories %}
-                <div class="sidebar-section-title">Recents</div>
-                {% for h in histories %}
-                <div class="history-item" data-session-id="{{ h.id }}" onclick="loadHistory({{ h.id }})">
-                    {{ h.isi_materi|truncatechars:35 }}
-                </div>
-                {% endfor %}
+            <div class="sidebar-section-title">Recents</div>
+            {% for h in histories %}
+            <div class="history-item" data-session-id="{{ h.id }}" onclick="loadHistory({{ h.id }})">
+                {{ h.isi_materi|truncatechars:35 }}
+            </div>
+            {% endfor %}
             {% else %}
-                <div class="no-history">Belum ada history.</div>
+            <div class="no-history">Belum ada history.</div>
             {% endif %}
         </div>
     </div>
@@ -310,8 +496,7 @@
 
         <div class="content-area">
             <div class="page-title">
-                <img src="{% static 'images/quiz.png' %}" alt="icon"
-                     onerror="this.style.display='none'">
+                <img src="{% static 'images/quiz.png' %}" alt="icon" onerror="this.style.display='none'">
                 <h2>Quiz Generator Page</h2>
             </div>
 
@@ -349,161 +534,161 @@
 </div>
 
 <script>
-let generatedQuiz = '';
-let currentMateriId = null;
+    let generatedQuiz = '';
+    let currentMateriId = null;
 
-async function generateQuiz() {
-    const material = document.getElementById('materialInput').value.trim();
-    const quizResult = document.getElementById('quizResult');
-    const answerResult = document.getElementById('answerResult');
-    const generateBtn = document.getElementById('generateBtn');
-    const loadingSpinner = document.getElementById('loadingSpinner');
-    const errorMsg = document.getElementById('errorMsg');
+    async function generateQuiz() {
+        const material = document.getElementById('materialInput').value.trim();
+        const quizResult = document.getElementById('quizResult');
+        const answerResult = document.getElementById('answerResult');
+        const generateBtn = document.getElementById('generateBtn');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMsg = document.getElementById('errorMsg');
 
-    if (!material) {
-        alert('Masukkan materi terlebih dahulu!');
-        return;
-    }
-
-    generateBtn.disabled = true;
-    loadingSpinner.style.display = 'block';
-    quizResult.value = '';
-    answerResult.value = '';
-    generatedQuiz = '';
-    errorMsg.style.display = 'none';
-
-    try {
-        const response = await fetch("{% url 'quiz_api' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ material: material })
-        });
-
-        const data = await response.json();
-
-        if (data.result) {
-            quizResult.value = data.result;
-            generatedQuiz = data.result;
-            currentMateriId = data.materi_id;
-            addToSidebar(currentMateriId, material);
-        } else {
-            errorMsg.textContent = data.error || 'Terjadi kesalahan.';
-            errorMsg.style.display = 'block';
+        if (!material) {
+            alert('Masukkan materi terlebih dahulu!');
+            return;
         }
-    } catch (error) {
-        errorMsg.textContent = 'Gagal terhubung ke server.';
-        errorMsg.style.display = 'block';
-    } finally {
-        generateBtn.disabled = false;
-        loadingSpinner.style.display = 'none';
-    }
-}
 
-function addToSidebar(materiId, material) {
-    const section = document.querySelector('.sidebar-section');
-    const noHistory = section.querySelector('.no-history');
-    if (noHistory) noHistory.remove();
-
-    let title = section.querySelector('.sidebar-section-title');
-    if (!title) {
-        title = document.createElement('div');
-        title.className = 'sidebar-section-title';
-        title.textContent = 'Recents';
-        section.prepend(title);
-    }
-
-    const item = document.createElement('div');
-    item.className = 'history-item active';
-    item.dataset.sessionId = materiId;
-    item.textContent = material.length > 35 ? material.substring(0, 35) + '...' : material;
-    item.onclick = () => loadHistory(materiId);
-
-    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-    title.insertAdjacentElement('afterend', item);
-}
-
-async function submitAnswer() {
-    const submitBtn = document.getElementById('submitBtn');
-    const loadingAnswer = document.getElementById('loadingAnswer');
-    const answerResult = document.getElementById('answerResult');
-    const errorMsg = document.getElementById('errorMsg');
-
-    if (!currentMateriId) {
-        alert('Generate soal terlebih dahulu!');
-        return;
-    }
-
-    submitBtn.disabled = true;
-    loadingAnswer.style.display = 'block';
-    answerResult.value = '';
-    errorMsg.style.display = 'none';
-
-    try {
-        const response = await fetch("{% url 'quiz_answer_api' %}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRFToken': '{{ csrf_token }}'
-            },
-            body: JSON.stringify({ materi_id: currentMateriId })
-        });
-
-        const data = await response.json();
-
-        if (data.result) {
-            answerResult.value = data.result;
-        } else {
-            errorMsg.textContent = data.error || 'Terjadi kesalahan.';
-            errorMsg.style.display = 'block';
-        }
-    } catch (error) {
-        errorMsg.textContent = 'Gagal terhubung ke server.';
-        errorMsg.style.display = 'block';
-    } finally {
-        submitBtn.disabled = false;
-        loadingAnswer.style.display = 'none';
-    }
-}
-
-async function loadHistory(materiId) {
-    const materialInput = document.getElementById('materialInput');
-    const quizResult = document.getElementById('quizResult');
-    const answerResult = document.getElementById('answerResult');
-    const errorMsg = document.getElementById('errorMsg');
-
-    try {
-        const url = "{% url 'get_quiz_history' history_id=0 %}".replace('0', materiId);
-        const response = await fetch(url);
-        const data = await response.json();
-
-        materialInput.value = data.material || '';
-        quizResult.value = data.quiz || '';
-        answerResult.value = data.answer || '';
-        generatedQuiz = data.quiz || '';
-        currentMateriId = materiId;
-
-        document.querySelectorAll('.history-item').forEach(el => {
-            el.classList.toggle('active', el.dataset.sessionId === String(materiId));
-        });
+        generateBtn.disabled = true;
+        loadingSpinner.style.display = 'block';
+        quizResult.value = '';
+        answerResult.value = '';
+        generatedQuiz = '';
         errorMsg.style.display = 'none';
-    } catch (error) {
-        errorMsg.textContent = 'Gagal memuat history.';
-        errorMsg.style.display = 'block';
-    }
-}
 
-function newChat() {
-    document.getElementById('materialInput').value = '';
-    document.getElementById('quizResult').value = '';
-    document.getElementById('answerResult').value = '';
-    document.getElementById('errorMsg').style.display = 'none';
-    generatedQuiz = '';
-    currentMateriId = null;
-    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-}
+        try {
+            const response = await fetch("{% url 'quiz_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ material: material })
+            });
+
+            const data = await response.json();
+
+            if (data.result) {
+                quizResult.value = data.result;
+                generatedQuiz = data.result;
+                currentMateriId = data.materi_id;
+                addToSidebar(currentMateriId, material);
+            } else {
+                errorMsg.textContent = data.error || 'Terjadi kesalahan.';
+                errorMsg.style.display = 'block';
+            }
+        } catch (error) {
+            errorMsg.textContent = 'Gagal terhubung ke server.';
+            errorMsg.style.display = 'block';
+        } finally {
+            generateBtn.disabled = false;
+            loadingSpinner.style.display = 'none';
+        }
+    }
+
+    function addToSidebar(materiId, material) {
+        const section = document.querySelector('.sidebar-section');
+        const noHistory = section.querySelector('.no-history');
+        if (noHistory) noHistory.remove();
+
+        let title = section.querySelector('.sidebar-section-title');
+        if (!title) {
+            title = document.createElement('div');
+            title.className = 'sidebar-section-title';
+            title.textContent = 'Recents';
+            section.prepend(title);
+        }
+
+        const item = document.createElement('div');
+        item.className = 'history-item active';
+        item.dataset.sessionId = materiId;
+        item.textContent = material.length > 35 ? material.substring(0, 35) + '...' : material;
+        item.onclick = () => loadHistory(materiId);
+
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        title.insertAdjacentElement('afterend', item);
+    }
+
+    async function submitAnswer() {
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingAnswer = document.getElementById('loadingAnswer');
+        const answerResult = document.getElementById('answerResult');
+        const errorMsg = document.getElementById('errorMsg');
+
+        if (!currentMateriId) {
+            alert('Generate soal terlebih dahulu!');
+            return;
+        }
+
+        submitBtn.disabled = true;
+        loadingAnswer.style.display = 'block';
+        answerResult.value = '';
+        errorMsg.style.display = 'none';
+
+        try {
+            const response = await fetch("{% url 'quiz_answer_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ materi_id: currentMateriId })
+            });
+
+            const data = await response.json();
+
+            if (data.result) {
+                answerResult.value = data.result;
+            } else {
+                errorMsg.textContent = data.error || 'Terjadi kesalahan.';
+                errorMsg.style.display = 'block';
+            }
+        } catch (error) {
+            errorMsg.textContent = 'Gagal terhubung ke server.';
+            errorMsg.style.display = 'block';
+        } finally {
+            submitBtn.disabled = false;
+            loadingAnswer.style.display = 'none';
+        }
+    }
+
+    async function loadHistory(materiId) {
+        const materialInput = document.getElementById('materialInput');
+        const quizResult = document.getElementById('quizResult');
+        const answerResult = document.getElementById('answerResult');
+        const errorMsg = document.getElementById('errorMsg');
+
+        try {
+            const url = "{% url 'get_quiz_history' history_id=0 %}".replace('0', materiId);
+            const response = await fetch(url);
+            const data = await response.json();
+
+            materialInput.value = data.material || '';
+            quizResult.value = data.quiz || '';
+            answerResult.value = data.answer || '';
+            generatedQuiz = data.quiz || '';
+            currentMateriId = materiId;
+
+            document.querySelectorAll('.history-item').forEach(el => {
+                el.classList.toggle('active', el.dataset.sessionId === String(materiId));
+            });
+            errorMsg.style.display = 'none';
+        } catch (error) {
+            errorMsg.textContent = 'Gagal memuat history.';
+            errorMsg.style.display = 'block';
+        }
+    }
+
+    function newChat() {
+        document.getElementById('materialInput').value = '';
+        document.getElementById('quizResult').value = '';
+        document.getElementById('answerResult').value = '';
+        document.getElementById('errorMsg').style.display = 'none';
+        generatedQuiz = '';
+        currentMateriId = null;
+        document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+    }
 </script>
 
 {% endblock %}

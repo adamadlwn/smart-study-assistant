@@ -13,9 +13,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-p2xh$6fd9u$by@hb+x-6iavit@a4^u%e+gpe2le8k&+vhs#aft'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['smartstudyasisstant.my.id', 'www.smartstudyasisstant.my.id']
+ALLOWED_HOSTS = []
 
 
 # Application definition

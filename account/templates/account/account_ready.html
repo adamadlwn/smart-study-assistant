@@ -16,7 +16,7 @@
         max-width: 860px;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
     }
 
     .ready-left {
@@ -82,6 +82,56 @@
         color: #4a6cf7;
         text-decoration: underline;
     }
+
+    @media (max-width: 768px) {
+        .ready-wrapper {
+            min-height: 100vh;
+            padding: 20px 16px;
+            align-items: flex-start;
+        }
+
+        .ready-card {
+            flex-direction: column;
+            max-width: 100%;
+            border-radius: 12px;
+        }
+
+        .ready-left {
+            padding: 30px 20px;
+        }
+
+        .ready-left img {
+            width: 120px;
+            margin-bottom: 10px;
+        }
+
+        .ready-left .brand-name {
+            font-size: 1rem;
+        }
+
+        .ready-right {
+            padding: 30px 24px;
+            flex: unset;
+        }
+
+        .ready-right .welcome-text {
+            font-size: 0.88rem;
+        }
+
+        .ready-right .signup-label {
+            font-size: 1.2rem;
+            margin-bottom: 16px;
+        }
+
+        .ready-right .account-ready-text {
+            font-size: 2rem;
+            margin-bottom: 28px;
+        }
+
+        .back-to-login {
+            font-size: 0.85rem;
+        }
+    }
 </style>
 
 <div class="ready-wrapper">
@@ -89,8 +139,7 @@
 
         <!-- Kiri -->
         <div class="ready-left">
-            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration"
-                 onerror="this.style.display='none'">
+            <img src="{% static 'images/SSA.png' %}" alt="SSA Illustration" onerror="this.style.display='none'">
             <div class="brand-name">Smart Study Assistant</div>
         </div>
 
