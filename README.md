@@ -4,7 +4,7 @@ Project UAS Praktikum Pemrograman Web Lanjut
 Tim: Code Thirteen Dev (Kelompok 13)
 
 ## Deskripsi
-Aplikasi pembelajaran berbasis web menggunakan Django dan AI untuk membantu mahasiswa belajar lebih efektif.
+Smart Study Assistant adalah aplikasi pembelajaran berbasis web yang dibangun menggunakan Django dan teknologi AI untuk membantu mahasiswa belajar lebih efektif melalui fitur ringkasan materi, tanya jawab otomatis, dan pembuatan kuis.
 
 ## Fitur Utama
 - AI Summary
@@ -15,7 +15,7 @@ Aplikasi pembelajaran berbasis web menggunakan Django dan AI untuk membantu maha
 - Python Django
 - HTML/CSS
 - AI API
-- SQLite
+- SQLlite
 
 ## Status
 Proposal Stage / Under Development
