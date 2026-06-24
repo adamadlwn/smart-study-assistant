@@ -15,7 +15,7 @@ Aplikasi pembelajaran berbasis web menggunakan Django dan AI untuk membantu maha
 - Python Django
 - HTML/CSS
 - AI API
-- SQLite
+- SQLlite
 
 ## Status
 Proposal Stage / Under Development
