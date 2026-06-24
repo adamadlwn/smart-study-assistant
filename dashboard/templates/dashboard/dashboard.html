@@ -11,247 +11,255 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
 
     <style>
-
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
             font-family: 'Poppins', sans-serif;
         }
 
-        body{
-            background:#cfcfcf;
-            overflow:hidden;
-        }
-
-        .dashboard-container{
-            display:flex;
-            min-height:100vh;
-        }
-
-        .column{
-            width:33.3%;
-            padding:25px 25px;
-            text-align:center;
-            position:relative;
-
-            display:flex;
-            flex-direction:column;
-            align-items:center;
-        }
-
-        .column:nth-child(1){
-            background:#b5b5b5;
-        }
-
-        .column:nth-child(2){
-            background:#d9d9d9;
-        }
-
-        .column:nth-child(3){
-            background:#b5b5b5;
-        }
-
-        .welcome{
-            position:absolute;
-            top:40px;
-            left:30px;
-            text-align:left;
-        }
-
-        .welcome p{
-            font-size:16px;
-            letter-spacing:2px;
-        }
-
-        .welcome h1{
-            font-size:55px;
-            font-weight:700;
-            color:#222;
-            text-shadow:3px 3px 5px rgba(0,0,0,0.2);
-        }
-
-        .user{
-            position:absolute;
-            top:40px;
-            right:30px;
-            text-align:right;
-        }
-
-        .user h3{
-            margin-bottom:5px;
-        }
-
-        .feature-image{
-            width:220px;
-            height:190px;
-            object-fit:contain;
-            margin-top:170px;
-            margin-bottom:30px;
-
-            filter: drop-shadow(15px 15px 10px rgba(0,0,0,0.28));
-        }
-
-        .btn-feature{
-            display:inline-block;
-            background:#a8c7e6;
-            padding:13px 35px;
-            border-radius:8px;
-            text-decoration:none;
-            color:black;
-            font-size:18px;
-            margin-bottom:40px;
-            box-shadow:0 6px 12px rgba(0,0,0,0.25);
-        }
-
-        .description{
-            background:white;
-            padding:25px;
-            border-radius:10px;
-            font-size:18px;
-            line-height:1.7;
-            box-shadow:0 8px 15px rgba(0,0,0,0.2);
-
-            min-height:180px;
-
-            display:flex;
-            align-items:center;
-            justify-content:center;
-        }
-
-    @media (max-width: 768px) {
         body {
-            overflow: auto;
+            background: #cfcfcf;
+            overflow: hidden;
         }
 
         .dashboard-container {
-            flex-direction: column;
-            min-height: auto;
+            display: flex;
+            min-height: 100vh;
         }
 
         .column {
-            width: 100%;
-            padding: 20px 20px 30px 20px;
-            min-height: auto;
+            width: 33.3%;
+            padding: 25px 25px;
+            text-align: center;
+            position: relative;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .column:nth-child(1) {
+            background: #b5b5b5;
+        }
+
+        .column:nth-child(2) {
+            background: #d9d9d9;
+        }
+
+        .column:nth-child(3) {
+            background: #b5b5b5;
         }
 
         .welcome {
-            position: relative;
-            top: unset;
-            left: unset;
+            position: absolute;
+            top: 40px;
+            left: 30px;
             text-align: left;
-            width: 100%;
-            margin-bottom: 10px;
         }
 
         .welcome p {
-            font-size: 14px;
-            letter-spacing: 1px;
+            font-size: 16px;
+            letter-spacing: 2px;
         }
 
         .welcome h1 {
-            font-size: 42px;
+            font-size: 55px;
+            font-weight: 700;
+            color: #222;
+            text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
         }
 
         .user {
-            position: relative;
-            top: unset;
-            right: unset;
+            position: absolute;
+            top: 40px;
+            right: 30px;
             text-align: right;
-            width: 100%;
-            margin-bottom: 10px;
+        }
+
+        .user h3 {
+            margin-bottom: 5px;
         }
 
         .feature-image {
-            width: 180px;
-            height: 160px;
-            margin-top: 20px;
-            margin-bottom: 20px;
+            width: 220px;
+            height: 190px;
+            object-fit: contain;
+            margin-top: 170px;
+            margin-bottom: 30px;
+
+            filter: drop-shadow(15px 15px 10px rgba(0, 0, 0, 0.28));
         }
 
         .btn-feature {
-            font-size: 16px;
-            padding: 11px 30px;
-            margin-bottom: 20px;
+            display: inline-block;
+            background: #a8c7e6;
+            padding: 13px 35px;
             border-radius: 8px;
-            width: 80%;
-            text-align: center;
+            text-decoration: none;
+            color: black;
+            font-size: 18px;
+            margin-bottom: 40px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
         }
 
         .description {
-            font-size: 15px;
-            padding: 20px;
-            min-height: auto;
-            line-height: 1.6;
-        }
-    }
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            font-size: 18px;
+            line-height: 1.7;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
 
+            min-height: 180px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow: auto;
+            }
+
+            .dashboard-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+
+            .column {
+                width: 100%;
+                padding: 20px 20px 30px 20px;
+                min-height: auto;
+            }
+
+            .welcome {
+                position: relative;
+                top: unset;
+                left: unset;
+                text-align: left;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .welcome p {
+                font-size: 14px;
+                letter-spacing: 1px;
+            }
+
+            .welcome h1 {
+                font-size: 42px;
+            }
+
+            .user {
+                position: relative;
+                top: unset;
+                right: unset;
+                text-align: right;
+                width: 100%;
+                margin-bottom: 10px;
+            }
+
+            .feature-image {
+                width: 180px;
+                height: 160px;
+                margin-top: 20px;
+                margin-bottom: 20px;
+            }
+
+            .btn-feature {
+                font-size: 16px;
+                padding: 11px 30px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                width: 80%;
+                text-align: center;
+            }
+
+            .description {
+                font-size: 15px;
+                padding: 20px;
+                min-height: auto;
+                line-height: 1.6;
+            }
+        }
     </style>
 
 </head>
+
 <body>
 
-<div class="dashboard-container">
+    <div class="dashboard-container">
 
-    <!-- AI SUMMARY -->
-    <div class="column">
+        <!-- AI SUMMARY -->
+        <div class="column">
 
-        <div class="welcome">
-            <p>Welcome to</p>
-            <h1>Dashboard</h1>
+            <div class="welcome">
+                <p>Welcome to</p>
+                <h1>Dashboard</h1>
+            </div>
+
+            <img src="{% static 'images/summary.png' %}" class="feature-image">
+
+            <br>
+
+            <a href="{% url 'summary' %}" class="btn-feature">AI Summary</a>
+
+            <div class="description">
+                Merangkum materi atau teks pembelajaran secara otomatis menggunakan AI sehingga pengguna lebih mudah
+                memahami inti materi dengan cepat.
+            </div>
+
         </div>
 
-        <img src="{% static 'images/summary.png' %}" class="feature-image">
+        <!-- AI Q&A -->
+        <div class="column">
 
-        <br>
+            <img src="{% static 'images/qna.png' %}" class="feature-image">
 
-        <a href="{% url 'summary' %}" class="btn-feature">AI Summary</a>
+            <br>
 
-        <div class="description">
-            Merangkum materi atau teks pembelajaran secara otomatis menggunakan AI sehingga pengguna lebih mudah memahami inti materi dengan cepat.
+            <a href="{% url 'qna' %}" class="btn-feature">AI Q&A</a>
+
+            <div class="description">
+                Tanya jawab interaktif berbasis AI yang membantu pengguna mendapatkan jawaban atau penjelasan terkait
+                materi yang sedang dipelajari.
+            </div>
+
+        </div>
+
+        <!-- QUIZ -->
+        <div class="column">
+
+            <div class="user">
+                {% if request.user.is_authenticated %}
+                <h3>{{ request.user.username }}</h3>
+                <a href="{% url 'logout' %}">Logout</a>
+                {% else %}
+                <a href="{% url 'login' %}">Login</a>
+                {% endif %}
+            </div>
+
+            <img src="{% static 'images/quiz.png' %}" class="feature-image">
+
+            <br>
+
+            <a href="{% url 'quiz' %}" class="btn-feature">Quiz Generator</a>
+
+            <div class="description">
+                Menghasilkan soal latihan atau kuis secara otomatis berdasarkan materi yang dimasukkan pengguna guna
+                menguji pemahaman belajar.
+            </div>
+
         </div>
 
     </div>
-
-    <!-- AI Q&A -->
-    <div class="column">
-
-        <img src="{% static 'images/qna.png' %}" class="feature-image">
-
-        <br>
-
-        <a href="{% url 'qna' %}" class="btn-feature">AI Q&A</a>
-
-        <div class="description">
-            Tanya jawab interaktif berbasis AI yang membantu pengguna mendapatkan jawaban atau penjelasan terkait materi yang sedang dipelajari.
-        </div>
-
-    </div>
-
-    <!-- QUIZ -->
-    <div class="column">
-
-        <div class="user">
-            <h3>User</h3>
-            <a href="{% url 'logout' %}">Logout</a>
-        </div>
-
-        <img src="{% static 'images/quiz.png' %}" class="feature-image">
-
-        <br>
-
-        <a href="{% url 'quiz' %}" class="btn-feature">Quiz Generator</a>
-
-        <div class="description">
-            Menghasilkan soal latihan atau kuis secara otomatis berdasarkan materi yang dimasukkan pengguna guna menguji pemahaman belajar.
-        </div>
-
-    </div>
-
-</div>
 
 </body>
+
 </html>
