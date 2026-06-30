@@ -29,16 +29,11 @@ class Qna(models.Model):
 
 
 class QuizMateri(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='quiz_materis')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     isi_materi = models.TextField()
-    tanggal = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        ordering = ['-tanggal']
-
-    def __str__(self):
-        return f"QuizMateri - {self.user.username} - {self.isi_materi[:50]}"
-
+    created_at = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)  # BARU
+    score = models.IntegerField(null=True, blank=True)  # BARU
 
 class Quiz(models.Model):
     materi = models.ForeignKey(QuizMateri, on_delete=models.CASCADE, related_name='quizzes')
@@ -48,9 +43,4 @@ class Quiz(models.Model):
     opsi_c = models.TextField()
     opsi_d = models.TextField()
     jawaban_benar = models.CharField(max_length=1)
-
-    class Meta:
-        ordering = ['id']
-
-    def __str__(self):
-        return f"Quiz - {self.materi.user.username} - {self.soal[:30]}"
+    user_answer = models.CharField(max_length=1, null=True, blank=True)  # BARU

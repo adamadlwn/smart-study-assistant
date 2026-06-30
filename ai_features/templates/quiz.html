@@ -67,6 +67,38 @@
         margin-bottom: 10px;
     }
 
+    /* SEARCH HISTORY */
+    .search-box {
+        position: relative;
+        margin-bottom: 12px;
+    }
+
+    .search-box input {
+        width: 100%;
+        background: #2e2e4e;
+        border: none;
+        border-radius: 7px;
+        padding: 8px 12px 8px 32px;
+        color: #fff;
+        font-size: 0.8rem;
+        outline: none;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .search-box input::placeholder {
+        color: #888;
+    }
+
+    .search-box::before {
+        content: '🔍';
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 0.75rem;
+        opacity: 0.6;
+    }
+
     .history-item {
         padding: 9px 12px;
         border-radius: 7px;
@@ -90,7 +122,12 @@
         color: #fff;
     }
 
-    .no-history {
+    .history-item.hidden-by-search {
+        display: none;
+    }
+
+    .no-history,
+    .no-search-result {
         font-size: 0.78rem;
         color: #666;
         font-style: italic;
@@ -163,7 +200,7 @@
     }
 
     .content-area {
-        max-width: 620px;
+        max-width: 680px;
         margin: 0 auto;
     }
 
@@ -242,67 +279,6 @@
         cursor: not-allowed;
     }
 
-    .btn-submit {
-        background-color: #4a6cf7;
-        color: #fff;
-        border: none;
-        border-radius: 6px;
-        padding: 7px 18px;
-        font-size: 0.82rem;
-        font-weight: 500;
-        cursor: pointer;
-        transition: background 0.2s;
-        margin-bottom: 12px;
-    }
-
-    .btn-submit:hover {
-        background-color: #3a57d7;
-    }
-
-    .btn-submit:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
-    }
-
-    .result-box {
-        background: #e8e8e8;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .result-box textarea {
-        width: 100%;
-        height: 180px;
-        border: none;
-        background: transparent;
-        resize: none;
-        outline: none;
-        font-size: 0.85rem;
-        color: #444;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    .answer-box {
-        background: #e8e8e8;
-        border-radius: 10px;
-        padding: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    .answer-box textarea {
-        width: 100%;
-        height: 100px;
-        border: none;
-        background: transparent;
-        resize: none;
-        outline: none;
-        font-size: 0.85rem;
-        color: #444;
-        font-family: 'Poppins', sans-serif;
-    }
-
     .loading-spinner {
         display: none;
         text-align: center;
@@ -321,6 +297,137 @@
         display: none;
     }
 
+    /* ===== QUIZ INTERAKTIF ===== */
+    .quiz-container {
+        display: none;
+    }
+
+    .quiz-progress {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1a1a2e;
+        margin-bottom: 14px;
+    }
+
+    .quiz-card {
+        background: #e8e8e8;
+        border-radius: 10px;
+        padding: 18px;
+        margin-bottom: 16px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .quiz-card .quiz-question {
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #1a1a2e;
+        margin-bottom: 14px;
+        line-height: 1.5;
+    }
+
+    .quiz-options {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .quiz-option {
+        background: #fff;
+        border: 2px solid #ddd;
+        border-radius: 8px;
+        padding: 11px 14px;
+        font-size: 0.86rem;
+        color: #333;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: 'Poppins', sans-serif;
+        text-align: left;
+    }
+
+    .quiz-option:hover:not(.disabled) {
+        border-color: #4a6cf7;
+        background: #f0f4ff;
+    }
+
+    .quiz-option.selected-correct {
+        background: #d4f8d4;
+        border-color: #2ecc71;
+        color: #1e7e34;
+        font-weight: 600;
+    }
+
+    .quiz-option.selected-wrong {
+        background: #ffe0e0;
+        border-color: #e74c3c;
+        color: #c0392b;
+        font-weight: 600;
+    }
+
+    .quiz-option.correct-answer-highlight {
+        background: #d4f8d4;
+        border-color: #2ecc71;
+        color: #1e7e34;
+        font-weight: 600;
+    }
+
+    .quiz-option.disabled {
+        cursor: not-allowed;
+        opacity: 0.85;
+    }
+
+    .btn-finish-quiz {
+        background-color: #2ecc71;
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 24px;
+        font-size: 0.88rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s;
+        display: none;
+        margin-bottom: 30px;
+    }
+
+    .btn-finish-quiz:hover {
+        background-color: #27ae60;
+    }
+
+    .btn-finish-quiz:disabled {
+        background-color: #aaa;
+        cursor: not-allowed;
+    }
+
+    /* SCORE CARD */
+    .score-card {
+        display: none;
+        background: #1a1a2e;
+        color: #fff;
+        border-radius: 14px;
+        padding: 30px;
+        text-align: center;
+        margin-bottom: 24px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .score-card .score-label {
+        font-size: 0.85rem;
+        color: #bbb;
+        margin-bottom: 6px;
+    }
+
+    .score-card .score-value {
+        font-size: 3rem;
+        font-weight: 800;
+        color: #4a6cf7;
+        margin-bottom: 10px;
+    }
+
+    .score-card .score-detail {
+        font-size: 0.95rem;
+        color: #ddd;
+    }
+
     /* ===== RESPONSIVE MOBILE ===== */
     @media (max-width: 768px) {
         body {
@@ -333,7 +440,6 @@
             overflow: visible;
         }
 
-        /* SIDEBAR jadi header di atas */
         .sidebar {
             width: 100%;
             min-width: unset;
@@ -358,24 +464,30 @@
             border-radius: 10px;
         }
 
-        /* History scroll horizontal */
         .sidebar-section {
             display: block;
             padding: 10px 16px 14px 16px;
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
         }
 
-        .sidebar-section::-webkit-scrollbar {
-            display: none;
+        .search-box {
+            margin-bottom: 10px;
         }
 
         .sidebar-section-title {
             font-size: 0.72rem;
             margin-bottom: 8px;
             display: block;
+        }
+
+        .history-list {
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .history-list::-webkit-scrollbar {
+            display: none;
         }
 
         .history-item {
@@ -388,7 +500,6 @@
             white-space: nowrap;
         }
 
-        /* MAIN CONTENT */
         .main-content {
             margin-left: 0;
             height: auto;
@@ -420,7 +531,6 @@
             font-size: 0.9rem;
         }
 
-        /* Tombol Generate & See Answer full width */
         .btn-generate {
             width: 100%;
             padding: 10px;
@@ -429,33 +539,31 @@
             margin-bottom: 12px;
         }
 
-        .btn-submit {
+        .btn-finish-quiz {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             font-size: 0.9rem;
-            border-radius: 8px;
-            margin-bottom: 12px;
         }
 
-        /* Result soal */
-        .result-box {
-            padding: 14px;
-            margin-bottom: 12px;
-        }
-
-        .result-box textarea {
-            height: 180px;
-            font-size: 0.88rem;
-        }
-
-        /* Answer box */
-        .answer-box {
+        .quiz-card {
             padding: 14px;
         }
 
-        .answer-box textarea {
-            height: 120px;
-            font-size: 0.88rem;
+        .quiz-card .quiz-question {
+            font-size: 0.9rem;
+        }
+
+        .quiz-option {
+            font-size: 0.84rem;
+            padding: 10px 12px;
+        }
+
+        .score-card {
+            padding: 22px;
+        }
+
+        .score-card .score-value {
+            font-size: 2.3rem;
         }
     }
 </style>
@@ -471,16 +579,24 @@
         </div>
 
         <div class="sidebar-section">
-            {% if histories %}
-            <div class="sidebar-section-title">Recents</div>
-            {% for h in histories %}
-            <div class="history-item" data-session-id="{{ h.id }}" onclick="loadHistory({{ h.id }})">
-                {{ h.isi_materi|truncatechars:35 }}
+            <div class="search-box">
+                <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
             </div>
-            {% endfor %}
-            {% else %}
-            <div class="no-history">Belum ada history.</div>
-            {% endif %}
+
+            <div id="historyList" class="history-list">
+                {% if histories %}
+                <div class="sidebar-section-title">Recents</div>
+                {% for h in histories %}
+                <div class="history-item" data-session-id="{{ h.id }}"
+                    data-search-text="{{ h.isi_materi|lower }}" onclick="loadHistory({{ h.id }})">
+                    {{ h.isi_materi|truncatechars:35 }}
+                </div>
+                {% endfor %}
+                {% else %}
+                <div class="no-history">Belum ada history.</div>
+                {% endif %}
+            </div>
+            <div class="no-search-result" id="noSearchResult" style="display:none;">Tidak ditemukan.</div>
         </div>
     </div>
 
@@ -512,35 +628,33 @@
                 Generate Quiz
             </button>
 
-            <div class="box-label">Hasil Generate Soal:</div>
-            <div class="result-box">
-                <textarea id="quizResult" readonly
-                    placeholder="Soal akan muncul di sini setelah generate..."></textarea>
+            <!-- SCORE CARD (muncul setelah selesai) -->
+            <div class="score-card" id="scoreCard">
+                <div class="score-label">Skor Kamu</div>
+                <div class="score-value" id="scoreValue">0</div>
+                <div class="score-detail" id="scoreDetail">0 dari 0 jawaban benar</div>
             </div>
 
-            <div class="loading-spinner" id="loadingAnswer">⏳ Sedang memproses jawaban...</div>
-
-            <button class="btn-submit" id="submitBtn" onclick="submitAnswer()">
-                See Answer
-            </button>
-
-            <div class="box-label">Answer:</div>
-            <div class="answer-box">
-                <textarea id="answerResult" readonly
-                    placeholder="Jawaban akan muncul setelah klik See Answer..."></textarea>
+            <!-- QUIZ INTERAKTIF -->
+            <div class="quiz-container" id="quizContainer">
+                <div class="quiz-progress" id="quizProgress">0 / 0 soal terjawab</div>
+                <div id="quizCardsWrapper"></div>
+                <button class="btn-finish-quiz" id="finishBtn" onclick="finishQuiz()">
+                    Selesai & Lihat Skor
+                </button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    let generatedQuiz = '';
     let currentMateriId = null;
+    let currentQuestions = [];
+    let userAnswers = {}; // { quiz_id: "A" }
+    let isReviewMode = false; // true kalau lagi lihat history yg sudah dikerjakan
 
     async function generateQuiz() {
         const material = document.getElementById('materialInput').value.trim();
-        const quizResult = document.getElementById('quizResult');
-        const answerResult = document.getElementById('answerResult');
         const generateBtn = document.getElementById('generateBtn');
         const loadingSpinner = document.getElementById('loadingSpinner');
         const errorMsg = document.getElementById('errorMsg');
@@ -552,10 +666,8 @@
 
         generateBtn.disabled = true;
         loadingSpinner.style.display = 'block';
-        quizResult.value = '';
-        answerResult.value = '';
-        generatedQuiz = '';
         errorMsg.style.display = 'none';
+        resetQuizView();
 
         try {
             const response = await fetch("{% url 'quiz_api' %}", {
@@ -569,10 +681,12 @@
 
             const data = await response.json();
 
-            if (data.result) {
-                quizResult.value = data.result;
-                generatedQuiz = data.result;
+            if (data.questions) {
                 currentMateriId = data.materi_id;
+                currentQuestions = data.questions;
+                userAnswers = {};
+                isReviewMode = false;
+                renderQuiz(currentQuestions);
                 addToSidebar(currentMateriId, material);
             } else {
                 errorMsg.textContent = data.error || 'Terjadi kesalahan.';
@@ -587,22 +701,172 @@
         }
     }
 
+    function resetQuizView() {
+        document.getElementById('quizContainer').style.display = 'none';
+        document.getElementById('quizCardsWrapper').innerHTML = '';
+        document.getElementById('scoreCard').style.display = 'none';
+        document.getElementById('finishBtn').style.display = 'none';
+        document.getElementById('finishBtn').disabled = true;
+    }
+
+    function renderQuiz(questions, completedData = null) {
+        const wrapper = document.getElementById('quizCardsWrapper');
+        wrapper.innerHTML = '';
+
+        questions.forEach((q, index) => {
+            const card = document.createElement('div');
+            card.className = 'quiz-card';
+            card.dataset.quizId = q.id;
+
+            const questionEl = document.createElement('div');
+            questionEl.className = 'quiz-question';
+            questionEl.textContent = `${index + 1}. ${q.soal}`;
+            card.appendChild(questionEl);
+
+            const optionsEl = document.createElement('div');
+            optionsEl.className = 'quiz-options';
+
+            const opts = [
+                { key: 'A', text: q.opsi_a },
+                { key: 'B', text: q.opsi_b },
+                { key: 'C', text: q.opsi_c },
+                { key: 'D', text: q.opsi_d },
+            ];
+
+            opts.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'quiz-option';
+                btn.textContent = `${opt.key}. ${opt.text}`;
+                btn.dataset.optionKey = opt.key;
+
+                // Mode review (history sudah dikerjakan)
+                if (completedData) {
+                    const correctKey = q.jawaban_benar;
+                    const userKey = q.user_answer;
+                    btn.classList.add('disabled');
+                    btn.disabled = true;
+
+                    if (opt.key === correctKey) {
+                        btn.classList.add('correct-answer-highlight');
+                    }
+                    if (opt.key === userKey && userKey !== correctKey) {
+                        btn.classList.add('selected-wrong');
+                    }
+                } else {
+                    btn.onclick = () => selectAnswer(q.id, opt.key, q.jawaban_benar, card);
+                }
+
+                optionsEl.appendChild(btn);
+            });
+
+            card.appendChild(optionsEl);
+            wrapper.appendChild(card);
+        });
+
+        document.getElementById('quizContainer').style.display = 'block';
+
+        if (completedData) {
+            updateProgress(questions.length, questions.length);
+            document.getElementById('finishBtn').style.display = 'none';
+            showScoreCard(completedData.score, completedData.correct_count, questions.length);
+        } else {
+            updateProgress(0, questions.length);
+            document.getElementById('finishBtn').style.display = 'inline-block';
+        }
+    }
+
+    function selectAnswer(quizId, selectedKey, correctKey, cardEl) {
+        // Sudah dijawab sebelumnya? kunci, tidak bisa diganti
+        if (userAnswers[quizId] !== undefined) return;
+
+        userAnswers[quizId] = selectedKey;
+
+        const buttons = cardEl.querySelectorAll('.quiz-option');
+        buttons.forEach(btn => {
+            btn.classList.add('disabled');
+            btn.disabled = true;
+
+            if (btn.dataset.optionKey === selectedKey) {
+                if (selectedKey === correctKey) {
+                    btn.classList.add('selected-correct');
+                } else {
+                    btn.classList.add('selected-wrong');
+                }
+            }
+            // Kalau user salah pilih, tetap highlight mana yang benar
+            if (selectedKey !== correctKey && btn.dataset.optionKey === correctKey) {
+                btn.classList.add('correct-answer-highlight');
+            }
+        });
+
+        updateProgress(Object.keys(userAnswers).length, currentQuestions.length);
+    }
+
+    function updateProgress(answered, total) {
+        document.getElementById('quizProgress').textContent = `${answered} / ${total} soal terjawab`;
+        const finishBtn = document.getElementById('finishBtn');
+        finishBtn.disabled = answered < total;
+    }
+
+    async function finishQuiz() {
+        if (Object.keys(userAnswers).length < currentQuestions.length) {
+            alert('Jawab semua soal terlebih dahulu!');
+            return;
+        }
+
+        const finishBtn = document.getElementById('finishBtn');
+        finishBtn.disabled = true;
+        finishBtn.textContent = 'Menghitung skor...';
+
+        try {
+            const response = await fetch("{% url 'quiz_submit_api' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ materi_id: currentMateriId, answers: userAnswers })
+            });
+
+            const data = await response.json();
+
+            if (data.score !== undefined) {
+                showScoreCard(data.score, data.correct_count, data.total);
+                document.getElementById('finishBtn').style.display = 'none';
+            } else {
+                alert(data.error || 'Terjadi kesalahan saat submit.');
+            }
+        } catch (error) {
+            alert('Gagal terhubung ke server.');
+        } finally {
+            finishBtn.textContent = 'Selesai & Lihat Skor';
+        }
+    }
+
+    function showScoreCard(score, correct, total) {
+        document.getElementById('scoreValue').textContent = score;
+        document.getElementById('scoreDetail').textContent = `${correct} dari ${total} jawaban benar`;
+        document.getElementById('scoreCard').style.display = 'block';
+        document.getElementById('scoreCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
     function addToSidebar(materiId, material) {
-        const section = document.querySelector('.sidebar-section');
-        const noHistory = section.querySelector('.no-history');
+        const list = document.getElementById('historyList');
+        const noHistory = list.querySelector('.no-history');
         if (noHistory) noHistory.remove();
 
-        let title = section.querySelector('.sidebar-section-title');
+        let title = list.querySelector('.sidebar-section-title');
         if (!title) {
             title = document.createElement('div');
             title.className = 'sidebar-section-title';
             title.textContent = 'Recents';
-            section.prepend(title);
+            list.prepend(title);
         }
 
         const item = document.createElement('div');
         item.className = 'history-item active';
         item.dataset.sessionId = materiId;
+        item.dataset.searchText = material.toLowerCase();
         item.textContent = material.length > 35 ? material.substring(0, 35) + '...' : material;
         item.onclick = () => loadHistory(materiId);
 
@@ -610,83 +874,76 @@
         title.insertAdjacentElement('afterend', item);
     }
 
-    async function submitAnswer() {
-        const submitBtn = document.getElementById('submitBtn');
-        const loadingAnswer = document.getElementById('loadingAnswer');
-        const answerResult = document.getElementById('answerResult');
-        const errorMsg = document.getElementById('errorMsg');
-
-        if (!currentMateriId) {
-            alert('Generate soal terlebih dahulu!');
-            return;
-        }
-
-        submitBtn.disabled = true;
-        loadingAnswer.style.display = 'block';
-        answerResult.value = '';
-        errorMsg.style.display = 'none';
-
-        try {
-            const response = await fetch("{% url 'quiz_answer_api' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ materi_id: currentMateriId })
-            });
-
-            const data = await response.json();
-
-            if (data.result) {
-                answerResult.value = data.result;
-            } else {
-                errorMsg.textContent = data.error || 'Terjadi kesalahan.';
-                errorMsg.style.display = 'block';
-            }
-        } catch (error) {
-            errorMsg.textContent = 'Gagal terhubung ke server.';
-            errorMsg.style.display = 'block';
-        } finally {
-            submitBtn.disabled = false;
-            loadingAnswer.style.display = 'none';
-        }
-    }
-
     async function loadHistory(materiId) {
-        const materialInput = document.getElementById('materialInput');
-        const quizResult = document.getElementById('quizResult');
-        const answerResult = document.getElementById('answerResult');
         const errorMsg = document.getElementById('errorMsg');
+        document.getElementById('materialInput').value = '';
+        resetQuizView();
+        errorMsg.style.display = 'none';
 
         try {
             const url = "{% url 'get_quiz_history' history_id=0 %}".replace('0', materiId);
             const response = await fetch(url);
             const data = await response.json();
 
-            materialInput.value = data.material || '';
-            quizResult.value = data.quiz || '';
-            answerResult.value = data.answer || '';
-            generatedQuiz = data.quiz || '';
-            currentMateriId = materiId;
+            if (data.error) {
+                errorMsg.textContent = data.error;
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            document.getElementById('materialInput').value = data.material || '';
+            currentMateriId = data.materi_id;
+            currentQuestions = data.questions || [];
 
             document.querySelectorAll('.history-item').forEach(el => {
                 el.classList.toggle('active', el.dataset.sessionId === String(materiId));
             });
-            errorMsg.style.display = 'none';
+
+            if (data.is_completed) {
+                isReviewMode = true;
+                renderQuiz(currentQuestions, { score: data.score, correct_count: countCorrect(currentQuestions) });
+            } else {
+                isReviewMode = false;
+                userAnswers = {};
+                renderQuiz(currentQuestions);
+            }
         } catch (error) {
             errorMsg.textContent = 'Gagal memuat history.';
             errorMsg.style.display = 'block';
         }
     }
 
+    function countCorrect(questions) {
+        return questions.filter(q => q.user_answer === q.jawaban_benar).length;
+    }
+
+    function filterHistory() {
+        const keyword = document.getElementById('historySearch').value.toLowerCase().trim();
+        const items = document.querySelectorAll('.history-item');
+        const noResultEl = document.getElementById('noSearchResult');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const text = item.dataset.searchText || '';
+            if (text.includes(keyword)) {
+                item.classList.remove('hidden-by-search');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden-by-search');
+            }
+        });
+
+        noResultEl.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
+    }
+
     function newChat() {
         document.getElementById('materialInput').value = '';
-        document.getElementById('quizResult').value = '';
-        document.getElementById('answerResult').value = '';
         document.getElementById('errorMsg').style.display = 'none';
-        generatedQuiz = '';
         currentMateriId = null;
+        currentQuestions = [];
+        userAnswers = {};
+        isReviewMode = false;
+        resetQuizView();
         document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
     }
 </script>

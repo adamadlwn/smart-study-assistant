@@ -138,7 +138,7 @@ def quiz_api(request):
             if not material:
                 return JsonResponse({'error': 'Materi tidak boleh kosong.'}, status=400)
 
-            prompt = f"""Buatkan 5 soal pilihan ganda berdasarkan materi berikut.
+            prompt = f"""Buatkan 10 soal pilihan ganda berdasarkan materi berikut.
 Gunakan format PERSIS seperti contoh di bawah ini untuk setiap soal, tanpa markdown dan tanpa simbol bintang (**):
 
 Soal 1: [pertanyaan]
@@ -155,7 +155,7 @@ C) [pilihan]
 D) [pilihan]
 Jawaban: [A/B/C/D]
 
-(dan seterusnya sampai Soal 5)
+(dan seterusnya sampai Soal 10)
 
 Materi:
 {material}"""
@@ -167,12 +167,20 @@ Materi:
                 return JsonResponse({'error': 'Gagal memproses hasil dari AI, coba generate ulang.'}, status=500)
 
             materi = QuizMateri.objects.create(user=request.user, isi_materi=material)
+            quiz_objects = []
             for q in questions:
-                Quiz.objects.create(materi=materi, **q)
+                quiz_objects.append(Quiz.objects.create(materi=materi, **q))
 
-            quiz_text = format_quiz_for_display(questions)
+            quiz_data = [{
+                'id': q.id,
+                'soal': q.soal,
+                'opsi_a': q.opsi_a,
+                'opsi_b': q.opsi_b,
+                'opsi_c': q.opsi_c,
+                'opsi_d': q.opsi_d,
+            } for q in quiz_objects]
 
-            return JsonResponse({'result': quiz_text, 'materi_id': materi.id})
+            return JsonResponse({'questions': quiz_data, 'materi_id': materi.id})
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -181,11 +189,13 @@ Materi:
 
 
 @login_required(login_url='/login/')
-def quiz_answer_api(request):
+def quiz_submit_api(request):
+    """Terima semua jawaban sekaligus, simpan ke DB, hitung skor."""
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
             materi_id = body.get('materi_id')
+            answers = body.get('answers', {})  # { "quiz_id": "A" }
 
             if not materi_id:
                 return JsonResponse({'error': 'materi_id tidak boleh kosong.'}, status=400)
@@ -196,13 +206,77 @@ def quiz_answer_api(request):
             if not quizzes:
                 return JsonResponse({'error': 'Belum ada soal untuk materi ini.'}, status=404)
 
-            lines = [f"Question {i}: {q.jawaban_benar}" for i, q in enumerate(quizzes, start=1)]
-            return JsonResponse({'result': "\n".join(lines)})
+            results = []
+            correct_count = 0
+
+            for q in quizzes:
+                user_answer = answers.get(str(q.id))
+                is_correct = (user_answer == q.jawaban_benar)
+                if is_correct:
+                    correct_count += 1
+
+                q.user_answer = user_answer
+                q.save()
+
+                results.append({
+                    'id': q.id,
+                    'soal': q.soal,
+                    'opsi_a': q.opsi_a,
+                    'opsi_b': q.opsi_b,
+                    'opsi_c': q.opsi_c,
+                    'opsi_d': q.opsi_d,
+                    'user_answer': user_answer,
+                    'jawaban_benar': q.jawaban_benar,
+                    'is_correct': is_correct,
+                })
+
+            total = quizzes.count()
+            score = round((correct_count / total) * 100) if total > 0 else 0
+
+            materi.is_completed = True
+            materi.score = score
+            materi.save()
+
+            return JsonResponse({
+                'score': score,
+                'correct_count': correct_count,
+                'total': total,
+                'results': results,
+            })
 
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
 
     return JsonResponse({'error': 'Method tidak diizinkan.'}, status=405)
+
+
+@login_required(login_url='/login/')
+def get_quiz_history(request, history_id):
+    """Load history lama, kembalikan dalam format terstruktur."""
+    try:
+        materi = get_object_or_404(QuizMateri, id=history_id, user=request.user)
+        quizzes = materi.quizzes.all()
+
+        questions = [{
+            'id': q.id,
+            'soal': q.soal,
+            'opsi_a': q.opsi_a,
+            'opsi_b': q.opsi_b,
+            'opsi_c': q.opsi_c,
+            'opsi_d': q.opsi_d,
+            'user_answer': q.user_answer,
+            'jawaban_benar': q.jawaban_benar,
+        } for q in quizzes]
+
+        return JsonResponse({
+            'material': materi.isi_materi,
+            'materi_id': materi.id,
+            'is_completed': materi.is_completed,
+            'score': materi.score,
+            'questions': questions,
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
 
 
 @login_required(login_url='/login/')
