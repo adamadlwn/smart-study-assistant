@@ -295,22 +295,3 @@ def get_qna_history(request, history_id):
         'question': hasil.pertanyaan,
         'result': hasil.jawaban
     })
-
-
-@login_required(login_url='/login/')
-def get_quiz_history(request, history_id):
-    materi = get_object_or_404(QuizMateri, id=history_id, user=request.user)
-    quizzes = materi.quizzes.all()
-
-    quiz_lines = []
-    answer_lines = []
-    for i, q in enumerate(quizzes, start=1):
-        quiz_lines += [f"Question {i}: {q.soal}", f"A. {q.opsi_a}", f"B. {q.opsi_b}",
-                       f"C. {q.opsi_c}", f"D. {q.opsi_d}", ""]
-        answer_lines.append(f"Question {i}: {q.jawaban_benar}")
-
-    return JsonResponse({
-        'material': materi.isi_materi,
-        'quiz': "\n".join(quiz_lines).strip(),
-        'answer': "\n".join(answer_lines)
-    })

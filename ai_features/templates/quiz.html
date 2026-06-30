@@ -363,6 +363,11 @@
         font-weight: 600;
     }
 
+    .quiz-option.selected {
+    border-color: #3b82f6;
+    background-color: rgba(59, 130, 246, 0.1);
+    }
+
     .quiz-option.correct-answer-highlight {
         background: #d4f8d4;
         border-color: #2ecc71;
@@ -776,26 +781,18 @@
     }
 
     function selectAnswer(quizId, selectedKey, correctKey, cardEl) {
-        // Sudah dijawab sebelumnya? kunci, tidak bisa diganti
-        if (userAnswers[quizId] !== undefined) return;
+        // Mode review tidak boleh diubah
+        if (isReviewMode) return;
 
         userAnswers[quizId] = selectedKey;
 
         const buttons = cardEl.querySelectorAll('.quiz-option');
         buttons.forEach(btn => {
-            btn.classList.add('disabled');
-            btn.disabled = true;
+            // Reset dulu semua tombol di card ini
+            btn.classList.remove('selected-correct', 'selected-wrong', 'correct-answer-highlight', 'selected');
 
             if (btn.dataset.optionKey === selectedKey) {
-                if (selectedKey === correctKey) {
-                    btn.classList.add('selected-correct');
-                } else {
-                    btn.classList.add('selected-wrong');
-                }
-            }
-            // Kalau user salah pilih, tetap highlight mana yang benar
-            if (selectedKey !== correctKey && btn.dataset.optionKey === correctKey) {
-                btn.classList.add('correct-answer-highlight');
+                btn.classList.add('selected');
             }
         });
 
@@ -808,40 +805,64 @@
         finishBtn.disabled = answered < total;
     }
 
-    async function finishQuiz() {
-        if (Object.keys(userAnswers).length < currentQuestions.length) {
-            alert('Jawab semua soal terlebih dahulu!');
-            return;
-        }
-
-        const finishBtn = document.getElementById('finishBtn');
-        finishBtn.disabled = true;
-        finishBtn.textContent = 'Menghitung skor...';
-
-        try {
-            const response = await fetch("{% url 'quiz_submit_api' %}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}'
-                },
-                body: JSON.stringify({ materi_id: currentMateriId, answers: userAnswers })
-            });
-
-            const data = await response.json();
-
-            if (data.score !== undefined) {
-                showScoreCard(data.score, data.correct_count, data.total);
-                document.getElementById('finishBtn').style.display = 'none';
-            } else {
-                alert(data.error || 'Terjadi kesalahan saat submit.');
-            }
-        } catch (error) {
-            alert('Gagal terhubung ke server.');
-        } finally {
-            finishBtn.textContent = 'Selesai & Lihat Skor';
-        }
+async function finishQuiz() {
+    if (Object.keys(userAnswers).length < currentQuestions.length) {
+        alert('Jawab semua soal terlebih dahulu!');
+        return;
     }
+
+    const finishBtn = document.getElementById('finishBtn');
+    finishBtn.disabled = true;
+    finishBtn.textContent = 'Menghitung skor...';
+
+    try {
+        const response = await fetch("{% url 'quiz_submit_api' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+            },
+            body: JSON.stringify({ materi_id: currentMateriId, answers: userAnswers })
+        });
+
+        const data = await response.json();
+
+        if (data.score !== undefined) {
+            revealAnswers(data.results);
+            showScoreCard(data.score, data.correct_count, data.total);
+            document.getElementById('finishBtn').style.display = 'none';
+        } else {
+            alert(data.error || 'Terjadi kesalahan saat submit.');
+        }
+    } catch (error) {
+        alert('Gagal terhubung ke server.');
+    } finally {
+        finishBtn.textContent = 'Selesai & Lihat Skor';
+    }
+}
+
+function revealAnswers(results) {
+    results.forEach(r => {
+        const card = document.querySelector(`.quiz-card[data-quiz-id="${r.id}"]`);
+        if (!card) return;
+
+        const buttons = card.querySelectorAll('.quiz-option');
+        buttons.forEach(btn => {
+            btn.disabled = true;
+            btn.classList.add('disabled');
+            btn.classList.remove('selected');
+
+            if (btn.dataset.optionKey === r.jawaban_benar) {
+                btn.classList.add('correct-answer-highlight');
+            }
+            if (btn.dataset.optionKey === r.user_answer && !r.is_correct) {
+                btn.classList.add('selected-wrong');
+            }
+        });
+    });
+
+    isReviewMode = true;
+}
 
     function showScoreCard(score, correct, total) {
         document.getElementById('scoreValue').textContent = score;
