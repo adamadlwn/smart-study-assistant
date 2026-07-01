@@ -34,6 +34,47 @@
         border-bottom: 1px solid #2e2e4e;
     }
 
+    .search-box {
+    position: relative;
+    margin-bottom: 12px;
+}
+
+.search-box input {
+    width: 100%;
+    background: #2e2e4e;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 12px 8px 32px;
+    color: #fff;
+    font-size: 0.8rem;
+    outline: none;
+    font-family: 'Poppins', sans-serif;
+}
+
+.search-box input::placeholder {
+    color: #888;
+}
+
+.search-box::before {
+    content: '🔍';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.history-item.hidden-by-search {
+    display: none;
+}
+
+.no-search-result {
+    font-size: 0.78rem;
+    color: #666;
+    font-style: italic;
+}
+
     .btn-new-chat {
         display: flex;
         align-items: center;
@@ -404,16 +445,22 @@
         </div>
 
         <div class="sidebar-section">
+            <div class="search-box">
+                <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
+            </div>
+
             {% if histories %}
             <div class="sidebar-section-title" style="margin-top:12px;">Recents</div>
             {% for h in histories %}
-            <div class="history-item" onclick="loadHistory({{ h.id }}, '{{ h.pertanyaan|truncatechars:40|escapejs }}')">
+            <div class="history-item" data-search-text="{{ h.pertanyaan|lower }}"
+                onclick="loadHistory({{ h.id }}, '{{ h.pertanyaan|truncatechars:40|escapejs }}')">
                 {{ h.pertanyaan|truncatechars:35 }}
             </div>
             {% endfor %}
             {% else %}
             <div class="no-history">Belum ada history.</div>
             {% endif %}
+            <div class="no-search-result" id="noSearchResult" style="display:none;">Tidak ditemukan.</div>
         </div>
     </div>
 
@@ -498,37 +545,57 @@
         }
     }
 
-    function addToSidebar(historyId, question) {
-        const section = document.querySelector('.sidebar-section');
+function addToSidebar(historyId, question) {
+    const section = document.querySelector('.sidebar-section');
 
-        const noHistory = section.querySelector('.no-history');
-        if (noHistory) noHistory.remove();
+    const noHistory = section.querySelector('.no-history');
+    if (noHistory) noHistory.remove();
 
-        if (!section.querySelector('.sidebar-section-title')) {
-            const title = document.createElement('div');
-            title.className = 'sidebar-section-title';
-            title.style.marginTop = '12px';
-            title.textContent = 'Recents';
-            section.prepend(title);
-        }
+    if (!section.querySelector('.sidebar-section-title')) {
+        const title = document.createElement('div');
+        title.className = 'sidebar-section-title';
+        title.style.marginTop = '12px';
+        title.textContent = 'Recents';
+        section.prepend(title);
+    }
 
+    document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+
+    const item = document.createElement('div');
+    item.className = 'history-item active';
+    item.dataset.searchText = question.toLowerCase();
+    item.textContent = question.length > 35 ? question.substring(0, 35) + '...' : question;
+    item.onclick = function () {
         document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
+        item.classList.add('active');
+        loadHistoryById(historyId);
+    };
 
-        const item = document.createElement('div');
-        item.className = 'history-item active';
-        item.textContent = question.length > 35 ? question.substring(0, 35) + '...' : question;
-        item.onclick = function () {
-            document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
-            item.classList.add('active');
-            loadHistoryById(historyId);
-        };
+    const title = section.querySelector('.sidebar-section-title');
+    if (title && title.nextSibling) {
+        section.insertBefore(item, title.nextSibling);
+    } else {
+        section.appendChild(item);
+    }
+}
 
-        const title = section.querySelector('.sidebar-section-title');
-        if (title && title.nextSibling) {
-            section.insertBefore(item, title.nextSibling);
-        } else {
-            section.appendChild(item);
-        }
+    function filterHistory() {
+        const keyword = document.getElementById('historySearch').value.toLowerCase().trim();
+        const items = document.querySelectorAll('.history-item');
+        const noResultEl = document.getElementById('noSearchResult');
+        let visibleCount = 0;
+
+        items.forEach(item => {
+            const text = item.dataset.searchText || '';
+            if (text.includes(keyword)) {
+                item.classList.remove('hidden-by-search');
+                visibleCount++;
+            } else {
+                item.classList.add('hidden-by-search');
+            }
+        });
+
+        noResultEl.style.display = (visibleCount === 0 && items.length > 0) ? 'block' : 'none';
     }
 
     async function loadHistoryById(historyId) {
