@@ -3,9 +3,24 @@
 
 {% block content %}
 <style>
+    :root {
+        --neon-1: #4fe0b8;
+        --neon-2: #18c99b;
+        --neon-3: #0e9a75;
+        --neon-glow: rgba(24, 201, 155, .32);
+        --danger-1: #ff8a6a;
+        --danger-2: #ef4444;
+        --sidebar-bg: #0e211d;
+        --sidebar-hover: rgba(79, 224, 184, .14);
+        --sidebar-active: rgba(79, 224, 184, .24);
+        --text-light: #e7fbf4;
+        --text-muted: #7fa89b;
+    }
+
     body {
-        background: #cfcfcf !important;
+        background: #f3faf7 !important;
         overflow: hidden;
+        font-family: 'Poppins', sans-serif;
     }
 
     .app-layout {
@@ -14,315 +29,321 @@
         overflow: hidden;
     }
 
+    /* ===== SIDEBAR ===== */
     .sidebar {
-        width: 260px;
-        min-width: 260px;
+        width: 270px;
+        min-width: 270px;
         height: 100vh;
         position: fixed;
         top: 0;
         left: 0;
-        background: #1a1a2e;
-        color: #fff;
+        background: var(--sidebar-bg);
+        color: var(--text-light);
         display: flex;
         flex-direction: column;
-        padding: 20px 0;
+        padding: 20px 16px;
         overflow-y: auto;
-    }
-
-    .sidebar-header {
-        padding: 0 16px 16px 16px;
-        border-bottom: 1px solid #2e2e4e;
     }
 
     .btn-new-chat {
         display: flex;
         align-items: center;
+        justify-content: center;
         gap: 8px;
-        background: #4a6cf7;
-        color: #fff;
+        background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+        color: #06231c;
         border: none;
-        border-radius: 8px;
-        padding: 10px 14px;
-        font-size: 0.85rem;
-        font-weight: 600;
+        border-radius: 10px;
+        padding: 11px 14px;
+        font-size: .88rem;
+        font-weight: 700;
         cursor: pointer;
         width: 100%;
-        transition: background 0.2s;
+        box-shadow: 0 4px 16px var(--neon-glow);
+        transition: filter .2s, transform .1s;
     }
+    .btn-new-chat:hover { filter: brightness(1.08); }
+    .btn-new-chat:active { transform: scale(.98); }
 
-    .btn-new-chat:hover {
-        background: #3a57d7;
+    .search-box { position: relative; margin: 16px 0 6px; }
+    .search-box svg {
+        position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+        opacity: .55;
     }
-
-    .sidebar-section {
-        padding: 16px;
-    }
-
-    .sidebar-section-title {
-        font-size: 0.72rem;
-        font-weight: 700;
-        color: #888;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-bottom: 10px;
-    }
-
-    /* SEARCH HISTORY */
-    .search-box {
-        position: relative;
-        margin-bottom: 12px;
-    }
-
     .search-box input {
         width: 100%;
-        background: #2e2e4e;
-        border: none;
-        border-radius: 7px;
-        padding: 8px 12px 8px 32px;
+        box-sizing: border-box;
+        background: rgba(255,255,255,.05);
+        border: 1px solid rgba(255,255,255,.09);
+        border-radius: 8px;
+        padding: 9px 12px 9px 34px;
         color: #fff;
-        font-size: 0.8rem;
+        font-size: .82rem;
         outline: none;
         font-family: 'Poppins', sans-serif;
     }
+    .search-box input::placeholder { color: var(--text-muted); }
+    .search-box input:focus { border-color: var(--neon-1); }
 
-    .search-box input::placeholder {
-        color: #888;
-    }
+    .sidebar-section { padding: 8px 2px; flex: 1; }
 
-    .search-box::before {
-        content: '🔍';
-        position: absolute;
-        left: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        font-size: 0.75rem;
-        opacity: 0.6;
+    .sidebar-section-title {
+        font-size: .7rem;
+        font-weight: 700;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin: 14px 6px 8px;
     }
 
     .history-item {
-        padding: 9px 12px;
-        border-radius: 7px;
-        font-size: 0.82rem;
-        color: #ccc;
+        padding: 10px 12px;
+        border-radius: 10px;
+        font-size: .82rem;
+        color: var(--text-light);
         cursor: pointer;
-        transition: background 0.15s;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        margin-bottom: 4px;
+        border: 1px solid transparent;
+        margin-bottom: 8px;
+        background:
+            linear-gradient(var(--sidebar-bg), var(--sidebar-bg)) padding-box,
+            linear-gradient(135deg, rgba(79,224,184,.4), rgba(14,154,117,.12)) border-box;
+        transition: background .15s, border-color .15s;
     }
-
     .history-item:hover {
-        background: #2e2e4e;
-        color: #fff;
+        background:
+            linear-gradient(var(--sidebar-hover), var(--sidebar-hover)) padding-box,
+            linear-gradient(135deg, var(--neon-1), rgba(14,154,117,.3)) border-box;
     }
-
     .history-item.active {
-        background: #2e2e4e;
+        background:
+            linear-gradient(135deg, rgba(79,224,184,.18), rgba(14,154,117,.1)) padding-box,
+            linear-gradient(135deg, var(--neon-1), var(--neon-3)) border-box;
         color: #fff;
+        font-weight: 700;
     }
+    .history-item.hidden-by-search { display: none; }
 
-    .history-item.hidden-by-search {
-        display: none;
-    }
-
-    .no-history,
-    .no-search-result {
-        font-size: 0.78rem;
-        color: #666;
+    .no-history, .no-search-result {
+        font-size: .78rem;
+        color: var(--text-muted);
         font-style: italic;
+        padding: 0 6px;
     }
 
+    .sidebar-profile {
+        margin-top: auto;
+        padding-top: 14px;
+        border-top: 1px solid rgba(255,255,255,.08);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .avatar-chip {
+        width: 34px; height: 34px;
+        border-radius: 10px;
+        background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+        display: flex; align-items: center; justify-content: center;
+        font-size: .72rem; font-weight: 700; color: #06231c;
+        flex-shrink: 0;
+    }
+    .sidebar-profile .name { font-size: .85rem; font-weight: 600; color: #fff; }
+    .sidebar-profile .role { font-size: .72rem; color: var(--text-muted); }
+
+    /* ===== MAIN CONTENT ===== */
     .main-content {
-        margin-left: 260px;
+        margin-left: 270px;
         flex: 1;
-        background: #cfcfcf;
-        padding: 30px 40px;
+        background: #f3faf7;
+        padding: 26px 40px 40px;
         height: 100vh;
         overflow-y: scroll;
         scrollbar-width: none;
         box-sizing: border-box;
     }
+    .main-content::-webkit-scrollbar { display: none; }
 
-    .main-content::-webkit-scrollbar {
-        display: none;
-    }
-
-    .top-bar {
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 30px;
-    }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 26px; }
 
     .back-btn {
-        color: #333;
+        color: #3f5850; text-decoration: none; font-size: .85rem; font-weight: 500;
+        display: flex; align-items: center; gap: 6px;
+    }
+    .back-btn:hover { color: var(--neon-3); }
+
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-chip {
+        display: flex; align-items: center; gap: 8px;
+        background: #fff; border: 1px solid #e2f2ec;
+        padding: 6px 14px 6px 6px; border-radius: 30px;
+    }
+    .user-chip .username { font-weight: 700; font-size: .85rem; color: #14261f; }
+    .btn-logout {
+        display: flex; align-items: center; gap: 6px;
+        background: #fff; border: 1px solid #e2f2ec; border-radius: 30px;
+        padding: 8px 16px; font-size: .82rem; font-weight: 600; color: #3f5850;
         text-decoration: none;
-        font-size: 0.85rem;
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 4px;
     }
+    .btn-logout:hover { border-color: var(--neon-1); color: var(--neon-3); }
 
-    .back-btn:hover {
-        color: #4a6cf7;
+    .content-area { max-width: 680px; margin: 0 auto; }
+
+    .page-title { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
+    .page-title .icon-badge {
+        width: 46px; height: 46px; border-radius: 14px;
+        background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+        display: flex; align-items: center; justify-content: center;
+        color: #06231c;
+        box-shadow: 0 6px 18px var(--neon-glow);
     }
-
-    .user-info {
-        text-align: right;
-        font-size: 0.85rem;
-    }
-
-    .user-info .username {
-        font-weight: 700;
-        color: #1a1a2e;
-        display: flex;
-        align-items: center;
-        justify-content: flex-end;
-        gap: 6px;
-    }
-
-    .user-info .username::after {
-        content: '👤';
-        font-size: 1rem;
-    }
-
-    .user-info a {
-        color: #555;
-        text-decoration: none;
-        font-size: 0.8rem;
-    }
-
-    .user-info a:hover {
-        color: #4a6cf7;
-        text-decoration: underline;
-    }
-
-    .content-area {
-        max-width: 680px;
-        margin: 0 auto;
-    }
-
-    .page-title {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 20px;
-    }
-
-    .page-title img {
-        width: 38px;
-        height: 38px;
-        object-fit: contain;
-    }
-
     .page-title h2 {
-        font-weight: 700;
-        font-size: 1.3rem;
-        color: #1a1a2e;
-        margin: 0;
-        letter-spacing: 1px;
-        text-transform: uppercase;
+        font-weight: 700; font-size: 1.3rem; color: #14261f; margin: 0;
+        letter-spacing: .5px;
+    }
+    .page-title .subtitle { font-size: .8rem; color: var(--text-muted); display: flex; align-items: center; gap: 4px; }
+
+    .neon-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 20px rgba(10, 50, 40, .05);
+        position: relative;
+        overflow: hidden;
+    }
+    .neon-card::before {
+        content: "";
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-1), var(--neon-2), var(--neon-3));
     }
 
-    .box-label {
-        font-weight: 700;
-        font-size: 0.88rem;
-        color: #1a1a2e;
-        margin-bottom: 8px;
-    }
-
-    .input-box {
-        background: #e8e8e8;
-        border-radius: 10px;
-        padding: 16px;
-        margin-bottom: 12px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    .field-label {
+        display: flex; align-items: center; gap: 6px;
+        font-size: .82rem; font-weight: 600; color: var(--neon-3);
+        margin-bottom: 10px;
     }
 
     .input-box textarea {
         width: 100%;
-        height: 100px;
+        min-height: 110px;
+        box-sizing: border-box;
         border: none;
-        background: transparent;
+        background: #f0fbf6;
+        border-radius: 10px;
+        padding: 14px;
         resize: none;
         outline: none;
-        font-size: 0.88rem;
+        font-size: .88rem;
         color: #333;
         font-family: 'Poppins', sans-serif;
     }
+    .input-box textarea::placeholder { color: #96b3aa; }
 
-    .input-box textarea::placeholder {
-        color: #999;
+    .input-box-footer {
+        display: flex; justify-content: space-between; align-items: center;
+        margin-top: 12px;
     }
+    #charCounter { font-size: .78rem; color: var(--text-muted); }
 
     .btn-generate {
-        background-color: #4a6cf7;
-        color: #fff;
+        display: flex; align-items: center; gap: 6px;
+        background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+        color: #06231c;
         border: none;
-        border-radius: 6px;
-        padding: 7px 18px;
-        font-size: 0.82rem;
-        font-weight: 500;
+        border-radius: 30px;
+        padding: 9px 20px;
+        font-size: .84rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: background 0.2s;
-        margin-bottom: 16px;
+        box-shadow: 0 4px 16px var(--neon-glow);
+        transition: filter .2s;
     }
-
-    .btn-generate:hover {
-        background-color: #3a57d7;
-    }
-
+    .btn-generate:hover { filter: brightness(1.06); }
     .btn-generate:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
+        background: #cfe9df; color: #7fa89b; box-shadow: none; cursor: not-allowed;
     }
 
     .loading-spinner {
         display: none;
         text-align: center;
-        color: #555;
-        font-size: 0.85rem;
+        color: var(--neon-3);
+        font-size: .85rem;
         margin: 8px 0;
     }
 
     .alert-error {
-        background-color: #ffe0e0;
+        background-color: #fde3e3;
         color: #c0392b;
-        border-radius: 6px;
+        border-radius: 8px;
         padding: 8px 12px;
-        font-size: 0.82rem;
-        margin-bottom: 8px;
+        font-size: .82rem;
+        margin-bottom: 10px;
         display: none;
     }
 
     /* ===== QUIZ INTERAKTIF ===== */
-    .quiz-container {
-        display: none;
-    }
+    .quiz-container { display: none; }
 
+    .quiz-progress-wrap {
+        margin-bottom: 18px;
+    }
     .quiz-progress {
-        font-size: 0.85rem;
+        font-size: .82rem;
         font-weight: 600;
-        color: #1a1a2e;
-        margin-bottom: 14px;
+        color: #14261f;
+        margin-bottom: 8px;
+    }
+    .quiz-progress-bar {
+        height: 6px;
+        border-radius: 4px;
+        background: #e2f2ec;
+        overflow: hidden;
+    }
+    .quiz-progress-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--neon-1), var(--neon-3));
+        border-radius: 4px;
+        transition: width .25s;
     }
 
     .quiz-card {
-        background: #e8e8e8;
-        border-radius: 10px;
-        padding: 18px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        background: #fff;
+        border-radius: 16px;
+        padding: 20px;
+        margin-bottom: 18px;
+        box-shadow: 0 4px 20px rgba(10, 50, 40, .05);
+        position: relative;
+        overflow: hidden;
+    }
+    .quiz-card::before {
+        content: "";
+        position: absolute; top: 0; left: 0; right: 0;
+        height: 4px;
+        background: linear-gradient(90deg, var(--neon-1), var(--neon-3));
     }
 
     .quiz-card .quiz-question {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
         font-weight: 600;
-        font-size: 0.95rem;
-        color: #1a1a2e;
-        margin-bottom: 14px;
+        font-size: .92rem;
+        color: #14261f;
+        margin-bottom: 16px;
         line-height: 1.5;
+    }
+    .quiz-card .quiz-question .q-num {
+        flex-shrink: 0;
+        width: 26px; height: 26px;
+        border-radius: 50%;
+        background: var(--neon-2);
+        color: #fff;
+        font-size: .78rem;
+        font-weight: 700;
+        display: flex; align-items: center; justify-content: center;
     }
 
     .quiz-options {
@@ -332,244 +353,162 @@
     }
 
     .quiz-option {
+        display: flex;
+        align-items: center;
+        gap: 12px;
         background: #fff;
-        border: 2px solid #ddd;
-        border-radius: 8px;
+        border: 1.5px solid #e2f2ec;
+        border-radius: 10px;
         padding: 11px 14px;
-        font-size: 0.86rem;
+        font-size: .86rem;
         color: #333;
         cursor: pointer;
         transition: all 0.15s;
         font-family: 'Poppins', sans-serif;
         text-align: left;
     }
+    .quiz-option .opt-key {
+        flex-shrink: 0;
+        width: 22px; height: 22px;
+        border-radius: 50%;
+        border: 1.5px solid #cfe3db;
+        font-size: .72rem;
+        font-weight: 700;
+        color: #5c7268;
+        display: flex; align-items: center; justify-content: center;
+    }
 
     .quiz-option:hover:not(.disabled) {
-        border-color: #4a6cf7;
-        background: #f0f4ff;
+        border-color: var(--neon-2);
+        background: #f0fbf6;
+    }
+
+    .quiz-option.selected {
+        border-color: var(--neon-2);
+        background: #e3f9f0;
+    }
+    .quiz-option.selected .opt-key {
+        background: var(--neon-2);
+        border-color: var(--neon-2);
+        color: #fff;
     }
 
     .quiz-option.selected-correct {
-        background: #d4f8d4;
-        border-color: #2ecc71;
-        color: #1e7e34;
+        background: #e3f9f0;
+        border-color: var(--neon-2);
+        color: #0e9a75;
         font-weight: 600;
     }
 
     .quiz-option.selected-wrong {
-        background: #ffe0e0;
-        border-color: #e74c3c;
+        background: #fdeaea;
+        border-color: var(--danger-2);
         color: #c0392b;
         font-weight: 600;
     }
-
-    .quiz-option.selected {
-    border-color: #3b82f6;
-    background-color: rgba(59, 130, 246, 0.1);
+    .quiz-option.selected-wrong .opt-key {
+        background: var(--danger-2);
+        border-color: var(--danger-2);
+        color: #fff;
     }
 
     .quiz-option.correct-answer-highlight {
-        background: #d4f8d4;
-        border-color: #2ecc71;
-        color: #1e7e34;
+        background: #e3f9f0;
+        border-color: var(--neon-2);
+        color: #0e9a75;
         font-weight: 600;
     }
-
-    .quiz-option.disabled {
-        cursor: not-allowed;
-        opacity: 0.85;
+    .quiz-option.correct-answer-highlight .opt-key {
+        background: var(--neon-2);
+        border-color: var(--neon-2);
+        color: #fff;
     }
+
+    .quiz-option.disabled { cursor: not-allowed; opacity: .9; }
 
     .btn-finish-quiz {
-        background-color: #2ecc71;
-        color: #fff;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        justify-content: center;
+        background: linear-gradient(135deg, var(--neon-1), var(--neon-3));
+        color: #06231c;
         border: none;
-        border-radius: 6px;
-        padding: 10px 24px;
-        font-size: 0.88rem;
-        font-weight: 600;
+        border-radius: 30px;
+        padding: 11px 24px;
+        font-size: .88rem;
+        font-weight: 700;
         cursor: pointer;
-        transition: background 0.2s;
+        transition: filter 0.2s;
         display: none;
         margin-bottom: 30px;
+        box-shadow: 0 4px 16px var(--neon-glow);
     }
-
-    .btn-finish-quiz:hover {
-        background-color: #27ae60;
-    }
-
+    .btn-finish-quiz:hover { filter: brightness(1.06); }
     .btn-finish-quiz:disabled {
-        background-color: #aaa;
-        cursor: not-allowed;
+        background: #cfe9df; color: #7fa89b; box-shadow: none; cursor: not-allowed;
     }
 
     /* SCORE CARD */
     .score-card {
         display: none;
-        background: #1a1a2e;
+        background: #10231f;
         color: #fff;
-        border-radius: 14px;
-        padding: 30px;
+        border-radius: 18px;
+        padding: 32px;
         text-align: center;
         margin-bottom: 24px;
-        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+        box-shadow: 0 10px 30px rgba(10, 40, 30, .25);
     }
 
     .score-card .score-label {
-        font-size: 0.85rem;
-        color: #bbb;
+        font-size: .85rem;
+        color: #9db9ae;
         margin-bottom: 6px;
+        display: flex; align-items: center; justify-content: center; gap: 6px;
     }
 
     .score-card .score-value {
         font-size: 3rem;
         font-weight: 800;
-        color: #4a6cf7;
-        margin-bottom: 10px;
+        background: linear-gradient(135deg, #ffb37a, #ef4444);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        margin-bottom: 8px;
     }
 
     .score-card .score-detail {
-        font-size: 0.95rem;
-        color: #ddd;
+        font-size: .95rem;
+        color: #d8e9e2;
+        margin-bottom: 16px;
+    }
+
+    .score-badge {
+        display: inline-block;
+        background: rgba(239, 68, 68, .15);
+        color: #ff8a6a;
+        font-size: .8rem;
+        font-weight: 700;
+        padding: 8px 20px;
+        border-radius: 30px;
     }
 
     /* ===== RESPONSIVE MOBILE ===== */
     @media (max-width: 768px) {
-        body {
-            overflow: auto !important;
-        }
-
-        .app-layout {
-            flex-direction: column;
-            height: auto;
-            overflow: visible;
-        }
-
+        body { overflow: auto !important; }
+        .app-layout { flex-direction: column; height: auto; overflow: visible; }
         .sidebar {
-            width: 100%;
-            min-width: unset;
-            height: auto;
-            position: relative;
-            top: unset;
-            left: unset;
-            flex-direction: column;
-            padding: 14px 0 0 0;
-            overflow-y: visible;
-            overflow-x: auto;
+            width: 100%; min-width: unset; height: auto; position: relative;
+            top: unset; left: unset; padding: 16px; box-sizing: border-box;
         }
-
-        .sidebar-header {
-            padding: 0 16px 12px 16px;
-            border-bottom: 1px solid #2e2e4e;
-        }
-
-        .btn-new-chat {
-            padding: 12px 16px;
-            font-size: 0.92rem;
-            border-radius: 10px;
-        }
-
-        .sidebar-section {
-            display: block;
-            padding: 10px 16px 14px 16px;
-        }
-
-        .search-box {
-            margin-bottom: 10px;
-        }
-
-        .sidebar-section-title {
-            font-size: 0.72rem;
-            margin-bottom: 8px;
-            display: block;
-        }
-
-        .history-list {
-            overflow-x: auto;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            scrollbar-width: none;
-        }
-
-        .history-list::-webkit-scrollbar {
-            display: none;
-        }
-
-        .history-item {
-            display: inline-block;
-            width: auto;
-            max-width: 160px;
-            margin-right: 8px;
-            margin-bottom: 0;
-            vertical-align: top;
-            white-space: nowrap;
-        }
-
-        .main-content {
-            margin-left: 0;
-            height: auto;
-            padding: 20px 16px;
-            overflow-y: visible;
-        }
-
-        .top-bar {
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .content-area {
-            max-width: 100%;
-        }
-
-        .page-title h2 {
-            font-size: 1.1rem;
-            letter-spacing: 0.5px;
-        }
-
-        .input-box {
-            padding: 14px;
-        }
-
-        .input-box textarea {
-            height: 100px;
-            font-size: 0.9rem;
-        }
-
-        .btn-generate {
-            width: 100%;
-            padding: 10px;
-            font-size: 0.9rem;
-            border-radius: 8px;
-            margin-bottom: 12px;
-        }
-
-        .btn-finish-quiz {
-            width: 100%;
-            padding: 12px;
-            font-size: 0.9rem;
-        }
-
-        .quiz-card {
-            padding: 14px;
-        }
-
-        .quiz-card .quiz-question {
-            font-size: 0.9rem;
-        }
-
-        .quiz-option {
-            font-size: 0.84rem;
-            padding: 10px 12px;
-        }
-
-        .score-card {
-            padding: 22px;
-        }
-
-        .score-card .score-value {
-            font-size: 2.3rem;
-        }
+        .main-content { margin-left: 0; height: auto; padding: 20px 16px; overflow-y: visible; box-sizing: border-box; }
+        .top-bar { flex-wrap: wrap; gap: 10px; }
+        .content-area { max-width: 100%; }
+        .btn-generate { width: 100%; justify-content: center; }
+        .btn-finish-quiz { width: 100%; }
+        .input-box-footer { flex-direction: column; align-items: stretch; gap: 10px; }
+        .score-card .score-value { font-size: 2.3rem; }
     }
 </style>
 
@@ -577,75 +516,112 @@
 
     <!-- SIDEBAR -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <button class="btn-new-chat" onclick="newChat()">
-                + New Chat
-            </button>
+        <button class="btn-new-chat" onclick="newChat()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            New Chat
+        </button>
+
+        <div class="search-box">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#e7fbf4" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+            <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
         </div>
 
-        <div class="sidebar-section">
-            <div class="search-box">
-                <input type="text" id="historySearch" placeholder="Search history..." oninput="filterHistory()">
+        <div id="historyList" class="history-list sidebar-section">
+            {% if histories %}
+            <div class="sidebar-section-title">Recents</div>
+            {% for h in histories %}
+            <div class="history-item" data-session-id="{{ h.id }}"
+                data-search-text="{{ h.isi_materi|lower }}" onclick="loadHistory({{ h.id }})">
+                {{ h.isi_materi|truncatechars:35 }}
             </div>
-
-            <div id="historyList" class="history-list">
-                {% if histories %}
-                <div class="sidebar-section-title">Recents</div>
-                {% for h in histories %}
-                <div class="history-item" data-session-id="{{ h.id }}"
-                    data-search-text="{{ h.isi_materi|lower }}" onclick="loadHistory({{ h.id }})">
-                    {{ h.isi_materi|truncatechars:35 }}
-                </div>
-                {% endfor %}
-                {% else %}
-                <div class="no-history">Belum ada history.</div>
-                {% endif %}
-            </div>
+            {% endfor %}
+            {% else %}
+            <div class="no-history">Belum ada history.</div>
+            {% endif %}
             <div class="no-search-result" id="noSearchResult" style="display:none;">Tidak ditemukan.</div>
+        </div>
+
+        <div class="sidebar-profile">
+            <div class="avatar-chip">{{ request.user.username|slice:":2"|upper }}</div>
+            <div>
+                <div class="name">{{ request.user.username }}</div>
+                <div class="role">Quiz Generator</div>
+            </div>
         </div>
     </div>
 
     <!-- MAIN CONTENT -->
     <div class="main-content">
         <div class="top-bar">
-            <a href="{% url 'dashboard' %}" class="back-btn">← Back to Dashboard</a>
+            <a href="{% url 'dashboard' %}" class="back-btn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Dashboard
+            </a>
             <div class="user-info">
-                <div class="username">{{ request.user.username }}</div>
-                <a href="{% url 'logout' %}">Logout</a>
+                <div class="user-chip">
+                    <div class="avatar-chip">{{ request.user.username|slice:":2"|upper }}</div>
+                    <div class="username">{{ request.user.username }}</div>
+                </div>
+                <a href="{% url 'logout' %}" class="btn-logout">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                    Logout
+                </a>
             </div>
         </div>
 
         <div class="content-area">
+
             <div class="page-title">
-                <img src="{% static 'images/quiz.png' %}" alt="icon" onerror="this.style.display='none'">
-                <h2>Quiz Generator Page</h2>
+                <div class="icon-badge">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#06231c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                </div>
+                <div>
+                    <h2>Quiz Generator</h2>
+                    <div class="subtitle">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                        Generate soal otomatis dari materi kamu
+                    </div>
+                </div>
             </div>
 
-            <div class="box-label">Input Materi:</div>
-            <div class="input-box">
+            <div class="neon-card input-box">
+                <div class="field-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                    Input Materi
+                </div>
                 <textarea id="materialInput" placeholder="Type or paste your content here..."></textarea>
+                <div class="input-box-footer">
+                    <span id="charCounter">0 karakter</span>
+                    <button class="btn-generate" id="generateBtn" onclick="generateQuiz()">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.4 7.2L22 12l-7.6 2.8L12 22l-2.4-7.2L2 12l7.6-2.8z"/></svg>
+                        Generate Quiz
+                    </button>
+                </div>
             </div>
 
             <div class="alert-error" id="errorMsg"></div>
-            <div class="loading-spinner" id="loadingSpinner">⏳ Sedang membuat soal...</div>
-
-            <button class="btn-generate" id="generateBtn" onclick="generateQuiz()">
-                Generate Quiz
-            </button>
+            <div class="loading-spinner" id="loadingSpinner">Sedang membuat soal...</div>
 
             <!-- SCORE CARD (muncul setelah selesai) -->
             <div class="score-card" id="scoreCard">
-                <div class="score-label">Skor Kamu</div>
+                <div class="score-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M17 4H7v6a5 5 0 0 0 10 0z"/><path d="M17 5h3a2 2 0 0 1-2 4M7 5H4a2 2 0 0 0 2 4"/></svg>
+                    Skor Kamu
+                </div>
                 <div class="score-value" id="scoreValue">0</div>
                 <div class="score-detail" id="scoreDetail">0 dari 0 jawaban benar</div>
+                <div class="score-badge" id="scoreBadge">Ayo semangat!</div>
             </div>
 
             <!-- QUIZ INTERAKTIF -->
             <div class="quiz-container" id="quizContainer">
-                <div class="quiz-progress" id="quizProgress">0 / 0 soal terjawab</div>
+                <div class="quiz-progress-wrap">
+                    <div class="quiz-progress" id="quizProgress">0 / 0 soal terjawab</div>
+                    <div class="quiz-progress-bar"><div class="quiz-progress-bar-fill" id="quizProgressFill" style="width:0%;"></div></div>
+                </div>
                 <div id="quizCardsWrapper"></div>
                 <button class="btn-finish-quiz" id="finishBtn" onclick="finishQuiz()">
-                    Selesai & Lihat Skor
+                    Selesai &amp; Lihat Skor
                 </button>
             </div>
         </div>
@@ -725,7 +701,7 @@
 
             const questionEl = document.createElement('div');
             questionEl.className = 'quiz-question';
-            questionEl.textContent = `${index + 1}. ${q.soal}`;
+            questionEl.innerHTML = `<span class="q-num">${index + 1}</span><span>${q.soal}</span>`;
             card.appendChild(questionEl);
 
             const optionsEl = document.createElement('div');
@@ -741,7 +717,7 @@
             opts.forEach(opt => {
                 const btn = document.createElement('button');
                 btn.className = 'quiz-option';
-                btn.textContent = `${opt.key}. ${opt.text}`;
+                btn.innerHTML = `<span class="opt-key">${opt.key}</span><span>${opt.text}</span>`;
                 btn.dataset.optionKey = opt.key;
 
                 // Mode review (history sudah dikerjakan)
@@ -801,6 +777,11 @@
 
     function updateProgress(answered, total) {
         document.getElementById('quizProgress').textContent = `${answered} / ${total} soal terjawab`;
+        const fillEl = document.getElementById('quizProgressFill');
+        if (fillEl) {
+            const pct = total > 0 ? (answered / total) * 100 : 0;
+            fillEl.style.width = pct + '%';
+        }
         const finishBtn = document.getElementById('finishBtn');
         finishBtn.disabled = answered < total;
     }
@@ -867,6 +848,17 @@ function revealAnswers(results) {
     function showScoreCard(score, correct, total) {
         document.getElementById('scoreValue').textContent = score;
         document.getElementById('scoreDetail').textContent = `${correct} dari ${total} jawaban benar`;
+
+        // Tambahan visual: teks badge motivasi berdasarkan skor (tidak mengubah logika submit/jawaban)
+        const badgeEl = document.getElementById('scoreBadge');
+        if (badgeEl) {
+            let badgeText = 'Ayo semangat!';
+            if (score >= 80) badgeText = 'Luar biasa!';
+            else if (score >= 60) badgeText = 'Kerja bagus!';
+            else if (score >= 40) badgeText = 'Cukup baik!';
+            badgeEl.textContent = badgeText;
+        }
+
         document.getElementById('scoreCard').style.display = 'block';
         document.getElementById('scoreCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -967,6 +959,11 @@ function revealAnswers(results) {
         resetQuizView();
         document.querySelectorAll('.history-item').forEach(el => el.classList.remove('active'));
     }
+
+    // ====== TAMBAHAN BARU (tidak menyentuh logika di atas) ======
+    document.getElementById('materialInput').addEventListener('input', function () {
+        document.getElementById('charCounter').textContent = this.value.length + ' karakter';
+    });
 </script>
 
 {% endblock %}
